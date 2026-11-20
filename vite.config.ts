@@ -16,5 +16,7 @@ export default defineConfig({
     restoreMocks: true,
     // Rendering a full page of 50 antd cards in jsdom takes a few seconds under parallel load.
     testTimeout: 30_000,
+    // Fewer, less-contended workers: each app-level test file renders full antd pages.
+    maxWorkers: '50%',
   },
 })

@@ -11,7 +11,8 @@ describe('UI states on the list and details pages', () => {
     setMockControls({ latency: 'slow' })
     renderApp('/')
     expect(screen.getByRole('status')).toHaveTextContent('Loading')
-    expect(await screen.findByRole('list', { name: 'Products' }, { timeout: 3000 })).toBeVisible()
+    // The mock waits 1.5 s on purpose, so allow extra time under parallel load.
+    expect(await screen.findByRole('list', { name: 'Products' }, { timeout: 10_000 })).toBeVisible()
   })
 
   it('shows a friendly error with a retry that recovers after a 500', async () => {

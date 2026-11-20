@@ -104,3 +104,19 @@ Each entry gives what was chosen, what else was considered, and why.
 
 - **Considered:** handling errors ad hoc in each component, or showing `error.message`.
 - **Why:** the client turns every failure into an `ApiClientError` with a `kind`, so components switch on a small closed set instead of status codes. All user-facing text comes from `errorCopy`, and the client's own `message` is generic by design, so a raw server message has no path to the screen. Retry is offered only where it can help (5xx, network, unexpected response), never for 400/401/404/409.
+
+## Caching: TanStack Query with a 60-second `staleTime`
+
+- **Considered:** no cache (refetch on every visit), `staleTime: Infinity`, caching in Redux.
+- **What happens:**
+  - Every product list (per search, filter, sort and page) and every product is cached under its own key.
+  - **Revisiting** a page within 60 s uses the cache with no request. After 60 s the cached data is shown at once and refreshed in the background (stale-while-revalidate).
+  - **Opening a product from the grid** uses the copy already in the list cache as `initialData`, with the list's real fetch time, so there is no request and no skeleton while it is fresh.
+  - Unused cache entries are dropped after 5 minutes (`gcTime` default).
+  - **After an order**, `invalidateQueries(['products'])` marks every product query stale, so the next view refetches the new stock. After a 409, the product's real stock is fetched and the cart is shrunk to it.
+- **When stale data is acceptable:**
+  - **Browsing (yes):** a price or stock figure up to a minute old on the grid or details page is fine. It's informational, and the user isn't committing to anything yet. Showing it instantly matters more.
+  - **Checkout (no):** stock is never trusted from the cache when money is involved. The server re-checks stock when the order is placed and answers 409 if it ran out, so stale client data can't oversell.
+  - **Order status (no):** the confirmation page polls every second until the order is final, because the user is waiting for exactly that change.
+  - **User profile:** cached per session and removed on sign-out, so the next user never sees it.
+- Live stock over WebSockets (D4-4) will push updates straight into the same cache, shortening how stale stock can get while browsing.
