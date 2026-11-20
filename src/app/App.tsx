@@ -1,6 +1,7 @@
 import { Layout, Typography } from 'antd'
-import { Link, Outlet, ScrollRestoration } from 'react-router'
+import { Outlet, ScrollRestoration } from 'react-router'
 import { MockControls } from '@/dev/MockControls'
+import { AppHeader } from './AppHeader'
 import './app.scss'
 
 const { Header, Content, Footer } = Layout
@@ -15,15 +16,15 @@ export function App({ showMockControls = false }: AppProps) {
   return (
     <Layout className="app">
       <Header className="app__header">
-        <Link to="/" className="app__brand">
-          The Bug Bazaar
-        </Link>
+        <AppHeader />
       </Header>
-      <Content className="app__content">
+      <Content className="app__content" id="main">
         <Outlet />
       </Content>
       <Footer className="app__footer">
-        <Typography.Text type="secondary">The Bug Bazaar training project</Typography.Text>
+        <Typography.Text type="secondary">
+          The Bug Bazaar · gear for people who ship bugs and fix them
+        </Typography.Text>
       </Footer>
       {showMockControls && <MockControls />}
       <ScrollRestoration />

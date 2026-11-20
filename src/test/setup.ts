@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
+import { setAuthToken } from '@/api/client'
 import { resetMockControls } from '@/mocks/controls'
 import { resetDb } from '@/mocks/db'
 import { server } from '@/mocks/server'
@@ -44,6 +45,9 @@ beforeAll(() => {
 })
 afterEach(() => {
   cleanup()
+  // Each test starts signed out with an empty cart, like a fresh browser.
+  setAuthToken(null)
+  localStorage.clear()
   server.resetHandlers()
   resetDb()
   resetMockControls()

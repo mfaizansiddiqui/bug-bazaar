@@ -13,8 +13,9 @@ export const globalToken: NonNullable<ThemeConfig['token']> = {
   colorWarning: '#f08c00',
   colorError: '#e03131',
   colorInfo: '#1c7ed6',
-  colorBgLayout: '#f6f5fb',
+  colorBgLayout: '#f7f7fb',
   colorTextBase: '#1f1d2b',
+  colorBorderSecondary: '#ebe9f3',
   borderRadius: 8,
   fontFamily:
     "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
@@ -24,11 +25,12 @@ export const globalToken: NonNullable<ThemeConfig['token']> = {
 /** Component tokens. Change a component here before reaching for CSS. */
 export const componentTokens: NonNullable<ThemeConfig['components']> = {
   Layout: {
-    headerBg: '#1f1d2b',
-    headerColor: '#ffffff',
-    headerPadding: '0 24px',
-    bodyBg: '#f6f5fb',
-    footerBg: '#f6f5fb',
+    headerBg: '#ffffff',
+    headerColor: '#1f1d2b',
+    headerPadding: '0 16px',
+    headerHeight: 64,
+    bodyBg: '#f7f7fb',
+    footerBg: '#f7f7fb',
   },
   Card: {
     borderRadiusLG: 12,
