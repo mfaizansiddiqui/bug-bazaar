@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router'
 import { NotFoundPage } from '@/components/NotFoundPage'
+import { RouteErrorFallback } from '@/components/RouteErrorFallback'
 import { AccountPage } from '@/features/auth/AccountPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
@@ -16,6 +17,8 @@ export function createRoutes({ showMockControls = false } = {}): RouteObject[] {
     {
       path: '/',
       element: <App showMockControls={showMockControls} />,
+      // A crash anywhere in the route tree shows the fallback and is logged (D4-7).
+      errorElement: <RouteErrorFallback />,
       children: [
         { index: true, element: <ProductListPage /> },
         { path: 'products/:id', element: <ProductDetailsPage /> },

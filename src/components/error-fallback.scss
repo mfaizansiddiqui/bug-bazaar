@@ -1,0 +1,6 @@
+@use '@/styles/variables' as *;
+
+.error-fallback {
+  min-height: 60vh;
+  padding: $space-xl $space-md;
+}

@@ -31,6 +31,10 @@ export function MockControls() {
     : []
   const isActive = controls.failRoute !== null || controls.latency !== 'none'
 
+  // D4-7 demo: throwing during render is exactly the kind of crash an error boundary catches.
+  const [crash, setCrash] = useState(false)
+  if (crash) throw new Error('Test crash from the mock controls panel')
+
   return (
     <>
       <FloatButton
@@ -105,6 +109,14 @@ export function MockControls() {
             description="dev@bugbazaar.test / password123. Product p-0001 has 1 in stock: order 2 to get a 409."
           />
           <Button onClick={resetMockControls}>Reset controls</Button>
+          <Button
+            danger
+            onClick={() => {
+              setCrash(true)
+            }}
+          >
+            Throw a test error
+          </Button>
         </Space>
       </Drawer>
     </>

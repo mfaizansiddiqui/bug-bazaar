@@ -6,6 +6,8 @@ import { AppProviders } from '@/app/AppProviders'
 import { createQueryClient } from '@/app/queryClient'
 import { createRoutes } from '@/app/routes'
 import { createAppStore } from '@/app/store'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { installGlobalErrorHandlers } from '@/lib/logger'
 import { themeConfig } from '@/theme/themeConfig'
 import '@/styles/main.scss'
 
@@ -25,13 +27,17 @@ async function bootstrap(): Promise<void> {
   const queryClient = createQueryClient()
   const router = createBrowserRouter(createRoutes({ showMockControls: useMockApi }))
 
+  installGlobalErrorHandlers()
+
   createRoot(rootElement).render(
     <StrictMode>
       <ConfigProvider theme={themeConfig}>
         <AntApp>
-          <AppProviders store={store} queryClient={queryClient}>
-            <RouterProvider router={router} />
-          </AppProviders>
+          <ErrorBoundary>
+            <AppProviders store={store} queryClient={queryClient}>
+              <RouterProvider router={router} />
+            </AppProviders>
+          </ErrorBoundary>
         </AntApp>
       </ConfigProvider>
     </StrictMode>,
