@@ -14,7 +14,10 @@
     height: 100%;
   }
 
+  // width/height attributes reserve space (no layout shift); CSS then sizes it to 4:3.
   &__image {
+    width: 100%;
+    height: auto;
     aspect-ratio: 4 / 3;
     object-fit: cover;
   }
@@ -34,7 +37,8 @@
 
   // Two-line clamp in CSS. antd's JS ellipsis measures every card after render, which is
   // costly across a page of 50 cards. CSS clamps for free.
-  &__name {
+  // Paired with .ant-typography so it outranks antd's h2 size; the card title stays small.
+  &__name.ant-typography {
     display: -webkit-box;
     min-height: 2.6em;
     margin: 0;

@@ -9,12 +9,20 @@ import type { ThemeConfig } from 'antd'
 /** Global (seed and map) tokens. */
 export const globalToken: NonNullable<ThemeConfig['token']> = {
   colorPrimary: '#5b3df5',
-  colorSuccess: '#2f9e44',
-  colorWarning: '#f08c00',
-  colorError: '#e03131',
+  // Status colors are dark enough for 4.5:1 text contrast on antd's light status backgrounds
+  // (D4-1). antd uses these for Tag, Alert and Result text, not just icons.
+  colorSuccess: '#1d6b30',
+  colorWarning: '#a24f00',
+  colorError: '#c92a2a',
   colorInfo: '#1c7ed6',
   colorBgLayout: '#f7f7fb',
   colorTextBase: '#1f1d2b',
+  // antd derives secondary text from colorTextBase at ~45% opacity (#96959d, only 2.8:1).
+  // Explicit values keep every grey text at 4.5:1 or better (WCAG AA).
+  colorTextSecondary: '#5f5c6e',
+  colorTextTertiary: '#5f5c6e',
+  colorTextDescription: '#5f5c6e',
+  colorTextPlaceholder: '#6b6880',
   colorBorderSecondary: '#ebe9f3',
   borderRadius: 8,
   fontFamily:

@@ -15,7 +15,8 @@ function useColumns(): number {
   return 1
 }
 
-const ESTIMATED_ROW_HEIGHT = 420
+// A row of cards is about 380 px tall at desktop widths. Real heights are measured after render.
+const ESTIMATED_ROW_HEIGHT = 380
 const OVERSCAN_ROWS = 2
 
 interface ProductGridProps {

@@ -34,7 +34,12 @@ export function AppHeader({ liveStatus }: AppHeaderProps) {
           <BugOutlined aria-hidden /> The Bug Bazaar
         </Link>
         {liveTag && (
-          <Tag color={liveTag.color} className="app-header__live-tag" role="status">
+          <Tag
+            color={liveTag.color}
+            variant={liveTag.color === 'default' ? 'outlined' : 'solid'}
+            className="app-header__live-tag"
+            role="status"
+          >
             {liveTag.label}
           </Tag>
         )}

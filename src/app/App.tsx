@@ -20,10 +20,21 @@ export function App({ showMockControls = false, liveStock = false }: AppProps) {
 
   return (
     <Layout className="app">
+      {/* First Tab stop: keyboard users can jump past the header (D4-1). */}
+      <Typography.Link
+        href="#main"
+        className="app__skip-link"
+        onClick={(event) => {
+          event.preventDefault()
+          document.getElementById('main')?.focus()
+        }}
+      >
+        Skip to main content
+      </Typography.Link>
       <Header className="app__header">
         <AppHeader liveStatus={liveStock ? liveStatus : null} />
       </Header>
-      <Content className="app__content" id="main">
+      <Content className="app__content" id="main" tabIndex={-1}>
         <Outlet />
       </Content>
       <Footer className="app__footer">

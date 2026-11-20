@@ -3,6 +3,22 @@
 .app {
   min-height: 100vh;
 
+  // Hidden until focused, then shown at the top left.
+  &__skip-link {
+    position: absolute;
+    z-index: 100;
+    top: $space-sm;
+    left: $space-sm;
+    padding: $space-sm $space-md;
+    transform: translateY(-200%);
+    border-radius: $border-radius;
+    background: $color-bg-container;
+
+    &:focus {
+      transform: translateY(0);
+    }
+  }
+
   &__header {
     position: sticky;
     z-index: 10;
@@ -11,6 +27,7 @@
   }
 
   &__content {
+    outline: none;
     width: 100%;
     max-width: $content-max-width;
     margin: 0 auto;

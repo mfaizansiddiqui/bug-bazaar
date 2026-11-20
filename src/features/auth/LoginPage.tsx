@@ -13,6 +13,15 @@ import './login-page.scss'
 
 const FIELDS = ['email', 'password'] as const
 
+/**
+ * One sentence for the role="alert" summary (D4-1). antd links each field's message to its
+ * input with aria-describedby, but doesn't announce it when the form is submitted, so
+ * screen-reader users hear about errors here, immediately.
+ */
+function summarize(messages: string[]): string {
+  return `Please fix ${messages.length === 1 ? 'this' : 'these'}: ${messages.join('. ')}.`
+}
+
 export function LoginPage() {
   const [form] = Form.useForm<LoginRequest>()
   const dispatch = useAppDispatch()
@@ -35,6 +44,7 @@ export function LoginPage() {
       const fieldErrors = fieldErrorsFrom(error, FIELDS)
       if (fieldErrors.length > 0) {
         form.setFields(fieldErrors)
+        setFormError(summarize(fieldErrors.flatMap((field) => field.errors)))
         return
       }
       setFormError(
@@ -82,6 +92,11 @@ export function LoginPage() {
             layout="vertical"
             requiredMark={false}
             disabled={signIn.isPending}
+            // Move focus to the first invalid field, so keyboard users land on the problem.
+            scrollToFirstError={{ focus: true }}
+            onFinishFailed={({ errorFields }) => {
+              setFormError(summarize(errorFields.flatMap((field) => field.errors)))
+            }}
             onFinish={(values) => {
               // The button is disabled while pending. This guard also stops Enter-key repeats.
               if (signIn.isPending) return
@@ -104,7 +119,7 @@ export function LoginPage() {
               name="password"
               rules={[{ required: true, message: 'Enter your password' }]}
             >
-              <Input.Password autoComplete="current-password" />
+              <Input.Password autoComplete="current-password" className="login-page__password" />
             </Form.Item>
             <Button type="primary" htmlType="submit" block loading={signIn.isPending}>
               Sign in
