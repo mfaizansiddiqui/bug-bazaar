@@ -1,0 +1,32 @@
+// SCSS mirror of src/theme/themeToken.ts. Keep the two aligned.
+// Component SCSS files use these variables. No hardcoded colors in component files.
+
+// Colors
+$color-primary: #5b3df5;
+$color-success: #2f9e44;
+$color-warning: #f08c00;
+$color-error: #e03131;
+$color-info: #1c7ed6;
+$color-bg-layout: #f6f5fb;
+$color-text-base: #1f1d2b;
+$color-header-bg: #1f1d2b;
+$color-header-text: #ffffff;
+
+// Shape and spacing
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// Layout
+$content-max-width: 1200px;
+
+// antd breakpoints (for the rare media query a grid prop or token can't cover)
+$screen-sm: 576px;
+$screen-md: 768px;
+$screen-lg: 992px;
+$screen-xl: 1200px;
+$screen-xxl: 1600px;

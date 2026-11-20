@@ -1,0 +1,27 @@
+@use '@/styles/variables' as *;
+
+.app {
+  min-height: 100vh;
+
+  &__header {
+    display: flex;
+    align-items: center;
+  }
+
+  &__brand {
+    margin: 0;
+    color: $color-header-text;
+    font-size: 20px;
+  }
+
+  &__content {
+    width: 100%;
+    max-width: $content-max-width;
+    margin: 0 auto;
+    padding: $space-lg $space-md;
+  }
+
+  &__footer {
+    text-align: center;
+  }
+}
