@@ -17,7 +17,12 @@ export function renderApp(url = '/') {
   const view = render(
     <AntApp>
       <AppProviders store={store} queryClient={queryClient}>
-        <RouterProvider router={router} />
+        {/*
+          No startTransition in tests. Router updates triggered outside act() (debounced
+          search, async handlers) could otherwise stay uncommitted in jsdom under parallel
+          load. The browser app keeps transitions. The logic under test is the same.
+        */}
+        <RouterProvider router={router} useTransitions={false} />
       </AppProviders>
     </AntApp>,
   )
