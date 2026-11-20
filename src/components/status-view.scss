@@ -1,0 +1,16 @@
+@use '@/styles/variables' as *;
+
+.status-view {
+  width: 100%;
+  padding: $space-lg 0;
+
+  // Visually hidden but still read by screen readers.
+  &__hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

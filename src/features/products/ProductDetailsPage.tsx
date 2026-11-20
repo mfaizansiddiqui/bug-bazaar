@@ -1,16 +1,8 @@
-import {
-  Breadcrumb,
-  Button,
-  Col,
-  Descriptions,
-  Flex,
-  Result,
-  Row,
-  Skeleton,
-  Typography,
-} from 'antd'
+import { Breadcrumb, Button, Col, Descriptions, Flex, Row, Skeleton, Typography } from 'antd'
 import { Link, useNavigate, useParams } from 'react-router'
+import { StatusView } from '@/components/StatusView'
 import { formatCents } from '@/lib/money'
+import { toRequestState } from '@/lib/toRequestState'
 import { useProduct } from './productQueries'
 import { StockTag } from './StockTag'
 import './product-details-page.scss'
@@ -34,37 +26,42 @@ export function ProductDetailsPage() {
     <Flex vertical gap="large" className="product-details-page">
       <Breadcrumb items={[{ title: <Link to="/">Products</Link> }, { title: id }]} />
 
-      {product.isPending && <Skeleton active avatar paragraph={{ rows: 6 }} />}
-      {product.isError && <Result status="error" title="Product could not be loaded" />}
-      {product.isSuccess && (
-        <Row gutter={[32, 24]}>
-          <Col xs={24} sm={24} md={12} lg={10} xl={10} xxl={8}>
-            <img
-              className="product-details-page__image"
-              src={product.data.imageUrl}
-              alt={product.data.name}
-              width={400}
-              height={300}
-            />
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={14} xl={14} xxl={16}>
-            <Typography.Title level={1}>{product.data.name}</Typography.Title>
-            <Typography.Title level={2} className="product-details-page__price">
-              {formatCents(product.data.price)}
-            </Typography.Title>
-            <StockTag stock={product.data.stock} />
-            <Descriptions
-              className="product-details-page__facts"
-              column={1}
-              items={[
-                { key: 'category', label: 'Category', children: product.data.category },
-                { key: 'rating', label: 'Rating', children: `${String(product.data.rating)} / 5` },
-                { key: 'id', label: 'Product ID', children: product.data.id },
-              ]}
-            />
-          </Col>
-        </Row>
-      )}
+      <StatusView
+        state={toRequestState(product)}
+        onRetry={() => void product.refetch()}
+        notFoundTitle="Product not found"
+        skeleton={<Skeleton active avatar paragraph={{ rows: 6 }} />}
+      >
+        {(data) => (
+          <Row gutter={[32, 24]}>
+            <Col xs={24} sm={24} md={12} lg={10} xl={10} xxl={8}>
+              <img
+                className="product-details-page__image"
+                src={data.imageUrl}
+                alt={data.name}
+                width={400}
+                height={300}
+              />
+            </Col>
+            <Col xs={24} sm={24} md={12} lg={14} xl={14} xxl={16}>
+              <Typography.Title level={1}>{data.name}</Typography.Title>
+              <Typography.Title level={2} className="product-details-page__price">
+                {formatCents(data.price)}
+              </Typography.Title>
+              <StockTag stock={data.stock} />
+              <Descriptions
+                className="product-details-page__facts"
+                column={1}
+                items={[
+                  { key: 'category', label: 'Category', children: data.category },
+                  { key: 'rating', label: 'Rating', children: `${String(data.rating)} / 5` },
+                  { key: 'id', label: 'Product ID', children: data.id },
+                ]}
+              />
+            </Col>
+          </Row>
+        )}
+      </StatusView>
 
       <Flex gap="middle" justify="space-between">
         <Button

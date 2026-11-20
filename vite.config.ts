@@ -14,5 +14,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: false,
     restoreMocks: true,
+    // Rendering a full page of 50 antd cards in jsdom takes a few seconds under parallel load.
+    testTimeout: 15_000,
   },
 })
