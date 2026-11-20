@@ -1,0 +1,14 @@
+// Global entry: document-level rules only. Component styles live next to each component.
+@use 'variables' as *;
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: $color-bg-layout;
+  color: $color-text-base;
+}

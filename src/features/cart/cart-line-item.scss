@@ -1,0 +1,31 @@
+@use '@/styles/variables' as *;
+
+.cart-line-item {
+  padding: $space-md 0;
+  border-bottom: 1px solid $color-border;
+
+  &__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: $border-radius;
+    object-fit: cover;
+  }
+
+  &__name {
+    display: block;
+    color: $color-text-base;
+    font-weight: 600;
+  }
+
+  &__unit {
+    font-size: 13px;
+  }
+
+  &__end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $space-sm;
+  }
+}

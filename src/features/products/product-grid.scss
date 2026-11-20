@@ -1,0 +1,15 @@
+@use '@/styles/variables' as *;
+
+.product-grid {
+  position: relative;
+  width: 100%;
+
+  // Rows are stacked at the top and moved into place with translateY (see ProductGrid.tsx).
+  &__row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: $space-md;
+  }
+}

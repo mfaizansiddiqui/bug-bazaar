@@ -1,0 +1,44 @@
+@use '@/styles/variables' as *;
+
+.app-header {
+  width: 100%;
+  max-width: $content-max-width;
+  height: 100%;
+  margin: 0 auto;
+
+  &__brand {
+    color: $color-text-base;
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__live-tag {
+    margin: 0;
+  }
+
+  &__link {
+    padding: $space-xs $space-sm;
+    border-radius: $border-radius;
+    color: $color-text-base;
+  }
+
+  &__cart {
+    padding-inline: $space-md;
+  }
+
+  &__cart-icon {
+    color: $color-text-base;
+    font-size: 22px;
+  }
+
+  // Screen-reader-only announcement of cart changes.
+  &__live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

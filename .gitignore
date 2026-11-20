@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local env files (keep .env.example committed)
+.env
+.env.*
+!.env.example
+coverage
+
+# Personal AI tool settings
+.claude/settings.local.json

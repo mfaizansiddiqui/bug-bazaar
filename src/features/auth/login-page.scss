@@ -1,0 +1,29 @@
+@use '@/styles/variables' as *;
+
+.login-page {
+  padding-top: $space-xl;
+
+  &__title {
+    margin-top: 0;
+  }
+
+  &__alert {
+    margin-bottom: $space-md;
+  }
+
+  // The show/hide password toggle is a 15 px icon. WCAG 2.2 asks for a 24 px target.
+  // No antd token sizes this icon's hit area, so this is the documented CSS exception.
+  &__password .ant-input-password-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  &__hint {
+    margin-top: $space-md;
+    margin-bottom: 0;
+    text-align: center;
+  }
+}

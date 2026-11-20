@@ -1,0 +1,65 @@
+@use '@/styles/variables' as *;
+
+.product-card {
+  display: block;
+  height: 100%;
+  border-radius: $border-radius-lg;
+
+  &:focus-visible {
+    outline: 3px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &__card {
+    height: 100%;
+  }
+
+  // width/height attributes reserve space (no layout shift); CSS then sizes it to 4:3.
+  &__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  &__category {
+    margin: 0;
+    text-transform: capitalize;
+  }
+
+  &__rating {
+    font-size: 13px;
+  }
+
+  &__star {
+    color: $color-warning;
+  }
+
+  // Two-line clamp in CSS. antd's JS ellipsis measures every card after render, which is
+  // costly across a page of 50 cards. CSS clamps for free.
+  // Paired with .ant-typography so it outranks antd's h2 size; the card title stays small.
+  &__name.ant-typography {
+    display: -webkit-box;
+    min-height: 2.6em;
+    margin: 0;
+    overflow: hidden;
+    font-size: 16px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  &__price {
+    font-size: 18px;
+  }
+
+  // Read by screen readers only.
+  &__hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
