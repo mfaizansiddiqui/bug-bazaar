@@ -1,0 +1,21 @@
+@use '@/styles/variables' as *;
+
+.product-details-page {
+  width: 100%;
+
+  &__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: $border-radius-lg;
+    object-fit: cover;
+  }
+
+  &__price {
+    margin-top: 0;
+  }
+
+  &__facts {
+    margin-top: $space-lg;
+  }
+}

@@ -17,6 +17,20 @@ const matchMediaStub = (query: string): Partial<MediaQueryList> => ({
 })
 Object.defineProperty(window, 'matchMedia', { writable: true, value: matchMediaStub })
 
+// jsdom doesn't implement ResizeObserver either. antd uses it to measure text ellipsis.
+class ResizeObserverStub {
+  observe(): void {
+    // no layout in jsdom, so nothing to observe
+  }
+  unobserve(): void {
+    // no-op
+  }
+  disconnect(): void {
+    // no-op
+  }
+}
+Object.defineProperty(window, 'ResizeObserver', { writable: true, value: ResizeObserverStub })
+
 // Fail loudly if a test hits an endpoint that has no handler.
 beforeAll(() => {
   server.listen({ onUnhandledFrame: 'error' })

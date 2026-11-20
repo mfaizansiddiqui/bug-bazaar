@@ -1,0 +1,9 @@
+@use '@/styles/variables' as *;
+
+.product-list-page {
+  width: 100%;
+
+  &__pagination {
+    align-self: center;
+  }
+}

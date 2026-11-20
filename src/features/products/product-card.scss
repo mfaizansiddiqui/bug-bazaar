@@ -1,0 +1,35 @@
+@use '@/styles/variables' as *;
+
+.product-card {
+  display: block;
+  height: 100%;
+  border-radius: $border-radius-lg;
+
+  &:focus-visible {
+    outline: 3px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &__card {
+    height: 100%;
+  }
+
+  &__image {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  &__name {
+    min-height: 2.6em;
+  }
+
+  &__price {
+    display: block;
+    margin-bottom: $space-sm;
+    font-size: 18px;
+  }
+
+  &__category {
+    text-transform: capitalize;
+  }
+}

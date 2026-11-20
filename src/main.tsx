@@ -1,7 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App as AntApp, ConfigProvider } from 'antd'
-import { App } from '@/app/App'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { createBrowserRouter, RouterProvider } from 'react-router'
+import { createQueryClient } from '@/app/queryClient'
+import { createRoutes } from '@/app/routes'
 import { themeConfig } from '@/theme/themeConfig'
 import '@/styles/main.scss'
 
@@ -17,11 +20,16 @@ async function bootstrap(): Promise<void> {
   const rootElement = document.getElementById('root')
   if (!rootElement) throw new Error('Root element #root not found in index.html')
 
+  const queryClient = createQueryClient()
+  const router = createBrowserRouter(createRoutes({ showMockControls: useMockApi }))
+
   createRoot(rootElement).render(
     <StrictMode>
       <ConfigProvider theme={themeConfig}>
         <AntApp>
-          <App showMockControls={useMockApi} />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
         </AntApp>
       </ConfigProvider>
     </StrictMode>,

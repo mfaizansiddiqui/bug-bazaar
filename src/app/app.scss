@@ -9,9 +9,14 @@
   }
 
   &__brand {
-    margin: 0;
     color: $color-header-text;
     font-size: 20px;
+    font-weight: 700;
+
+    &:focus-visible {
+      outline: 2px solid $color-header-text;
+      outline-offset: 4px;
+    }
   }
 
   &__content {
