@@ -31,6 +31,9 @@ class ResizeObserverStub {
 }
 Object.defineProperty(window, 'ResizeObserver', { writable: true, value: ResizeObserverStub })
 
+// jsdom has no layout, so scrolling is a no-op. Tests assert on scroll listeners instead.
+Object.defineProperty(window, 'scrollTo', { writable: true, value: () => undefined })
+
 // Fail loudly if a test hits an endpoint that has no handler.
 beforeAll(() => {
   server.listen({ onUnhandledFrame: 'error' })

@@ -31,7 +31,7 @@ describe('UI states on the list and details pages', () => {
   it('shows the empty state when nothing matches', async () => {
     server.use(http.get('*/api/products', () => HttpResponse.json({ items: [], total: 0 })))
     renderApp('/')
-    expect(await screen.findByText('No products found')).toBeVisible()
+    expect(await screen.findByText('No products match your filters')).toBeVisible()
   })
 
   it('shows the not found page for an unknown product', async () => {
