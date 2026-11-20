@@ -1,6 +1,6 @@
 import { combineReducers, configureStore, createListenerMiddleware } from '@reduxjs/toolkit'
 import { onUnauthorized, setAuthToken } from '@/api/client'
-import { signedOut, sessionReducer } from '@/features/auth/sessionSlice'
+import { sessionExpired, sessionReducer } from '@/features/auth/sessionSlice'
 import { cartReducer } from '@/features/cart/cartSlice'
 import { loadCart, saveCart } from '@/features/cart/cartStorage'
 
@@ -33,7 +33,7 @@ export function createAppStore() {
   // Any 401 from any request clears the session in one place (D3-3, D3-4).
   onUnauthorized(() => {
     setAuthToken(null)
-    store.dispatch(signedOut())
+    store.dispatch(sessionExpired())
   })
 
   return store

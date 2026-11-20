@@ -8,7 +8,7 @@ import { errorCopy, errorKindOf } from '@/api/errorCopy'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { fieldErrorsFrom } from '@/lib/formErrors'
 import { returnPathFrom } from './returnTo'
-import { selectIsSignedIn, signedIn } from './sessionSlice'
+import { selectIsSignedIn, selectSessionExpired, signedIn } from './sessionSlice'
 import './login-page.scss'
 
 const FIELDS = ['email', 'password'] as const
@@ -19,6 +19,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const isSignedIn = useAppSelector(selectIsSignedIn)
+  const sessionWasExpired = useAppSelector(selectSessionExpired)
   const returnPath = returnPathFrom(location.state)
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -57,6 +58,15 @@ export function LoginPage() {
             Sign in to check out and see your account.
           </Typography.Paragraph>
 
+          {sessionWasExpired && !formError && (
+            <Alert
+              type="info"
+              showIcon
+              role="status"
+              title="Your session has ended. Please sign in again."
+              className="login-page__alert"
+            />
+          )}
           {formError && (
             <Alert
               type="error"

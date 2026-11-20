@@ -81,6 +81,26 @@ Each entry gives what was chosen, what else was considered, and why.
   3. **Key isolation (the real guarantee):** each response is stored under the query that asked for it, and the page only reads the current key. Even if the server ignores the abort and an old reply arrives last, it goes into its own cache entry and is never shown.
 - The test `searchRace.test.tsx` makes `duck` slow and `mug` fast, types both, and checks that `mug` results stay on screen after the `duck` reply lands.
 
-## Planned (recorded when the feature starts)
+## Client state: Redux Toolkit for cart and session
 
-- Redux Toolkit for cart and session (D3-1).
+- **Considered:** React Context + `useReducer`, Zustand, RTK Query for everything.
+- **Why:** the cart and session are client state shared across the header, cart, checkout and login. Redux Toolkit gives one store, actions as the only way to change state, and dev checks that catch accidental mutation. Derived values (cart count, total) are memoized selectors, never stored, so they can't drift from the lines. Server data stays in TanStack Query. Mixing the two would mean two caches for the same products.
+- **Persistence:** a listener middleware saves the cart to `localStorage` only when `state.cart` changes, and the store reloads it through a Zod schema, so a corrupt or outdated value becomes an empty cart instead of a crash. The token is never persisted (see `docs/auth.md`).
+
+## Checkout idempotency: one key per cart, reused on retry
+
+- **Considered:** disabling the button only, generating a new key per click.
+- **Why:** disabling the button stops double clicks but not a retry after a lost response, which is when duplicate orders actually happen. A new key per click would defeat the server's check. The key is created once (`checkoutStarted` keeps an existing one), persisted with the cart so it survives a reload mid-checkout, sent as `Idempotency-Key`, and cleared whenever the cart changes, because a different cart is a different order. The test `checkout.test.tsx` drops the first response after the server has created the order, retries, and expects exactly one order.
+
+## Backend errors: one policy, applied in one place each
+
+| Status        | Where it is handled                                          | What the user sees                                                                  |
+| ------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| 400           | `fieldErrorsFrom` → `form.setFields`                         | The message under the field it belongs to                                           |
+| 401           | `onUnauthorized` listener in `store.ts` → `sessionExpired()` | Redirect to login with "Your session has ended", then back to the page they were on |
+| 404           | `StatusView` → `NotFoundPage`                                | A Not Found page with a way back                                                    |
+| 409           | Checkout `onError`                                           | "Not enough stock for <item>", and the cart is shrunk to the real stock             |
+| 500 / network | `StatusView` / checkout alert                                | Friendly copy and a "Try again" button                                              |
+
+- **Considered:** handling errors ad hoc in each component, or showing `error.message`.
+- **Why:** the client turns every failure into an `ApiClientError` with a `kind`, so components switch on a small closed set instead of status codes. All user-facing text comes from `errorCopy`, and the client's own `message` is generic by design, so a raw server message has no path to the screen. Retry is offered only where it can help (5xx, network, unexpected response), never for 400/401/404/409.
