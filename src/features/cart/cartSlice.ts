@@ -68,17 +68,24 @@ const cartSlice = createSlice({
       state.checkoutKey = null
     },
 
-    /** New stock from the server (after a 409 or a refetch). Quantities above it shrink. */
+    /**
+     * New stock from the server (a 409, a refetch or the live feed). Quantities above it
+     * shrink. The checkout key is reset only if what you're buying actually changed. A stock
+     * update that leaves your quantities alone must keep the key: otherwise a retry after a
+     * lost response would get a new key and could create a duplicate order.
+     */
     stockChanged(state, action: PayloadAction<{ productId: string; stock: number }>) {
       const line = state.lines.find((item) => item.productId === action.payload.productId)
       if (!line) return
       line.stock = action.payload.stock
+      const before = line.quantity
       if (line.stock < 1) {
         state.lines = state.lines.filter((item) => item.productId !== line.productId)
-      } else {
-        line.quantity = clampQuantity(line.quantity, line.stock)
+        state.checkoutKey = null
+        return
       }
-      state.checkoutKey = null
+      line.quantity = clampQuantity(line.quantity, line.stock)
+      if (line.quantity !== before) state.checkoutKey = null
     },
 
     checkoutStarted: {

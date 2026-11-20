@@ -110,6 +110,16 @@ export function MockControls() {
           />
           <Button onClick={resetMockControls}>Reset controls</Button>
           <Button
+            onClick={() => {
+              // Loaded on demand, so msw never ends up in the main bundle.
+              void import('@/mocks/liveStock').then(({ dropLiveStockConnections }) => {
+                dropLiveStockConnections()
+              })
+            }}
+          >
+            Drop live stock connection
+          </Button>
+          <Button
             danger
             onClick={() => {
               setCrash(true)

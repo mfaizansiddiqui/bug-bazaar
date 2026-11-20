@@ -1,24 +1,44 @@
 import { BugOutlined, LoginOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
-import { Badge, Button, Flex, Typography } from 'antd'
+import { Badge, Button, Flex, Tag, Typography } from 'antd'
 import { Link, useNavigate } from 'react-router'
+import type { LiveStockStatus } from '@/api/liveStock'
 import { useAppSelector } from '@/app/hooks'
 import { useLogout } from '@/features/auth/useLogout'
 import { selectUser } from '@/features/auth/sessionSlice'
 import { selectCartCount } from '@/features/cart/cartSlice'
 import './app-header.scss'
 
-/** Top bar: brand, cart badge (a derived value, D3-1), and the sign-in state. */
-export function AppHeader() {
+const LIVE_TAG: Record<Exclude<LiveStockStatus, 'stopped'>, { color: string; label: string }> = {
+  connecting: { color: 'default', label: 'Connecting…' },
+  live: { color: 'success', label: 'Live stock' },
+  reconnecting: { color: 'warning', label: 'Reconnecting…' },
+}
+
+interface AppHeaderProps {
+  /** Live stock feed status, or null when the feed is off. */
+  liveStatus: LiveStockStatus | null
+}
+
+/** Top bar: brand, live stock status, cart badge (a derived value, D3-1), sign-in state. */
+export function AppHeader({ liveStatus }: AppHeaderProps) {
   const navigate = useNavigate()
   const cartCount = useAppSelector(selectCartCount)
   const user = useAppSelector(selectUser)
   const logout = useLogout()
+  const liveTag = liveStatus && liveStatus !== 'stopped' ? LIVE_TAG[liveStatus] : null
 
   return (
     <Flex align="center" justify="space-between" gap="middle" className="app-header">
-      <Link to="/" className="app-header__brand">
-        <BugOutlined aria-hidden /> The Bug Bazaar
-      </Link>
+      <Flex align="center" gap="middle">
+        <Link to="/" className="app-header__brand">
+          <BugOutlined aria-hidden /> The Bug Bazaar
+        </Link>
+        {liveTag && (
+          <Tag color={liveTag.color} className="app-header__live-tag" role="status">
+            {liveTag.label}
+          </Tag>
+        )}
+      </Flex>
 
       <Flex component="nav" aria-label="Main" align="center" gap="small">
         <Link to="/" className="app-header__link">

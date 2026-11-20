@@ -111,6 +111,15 @@ Request: `{ "items": [{ "productId": string, "quantity": number }] }`
 - 200: `{ "id", "status" }`. In the mock, the status moves from `queued` to `processing` after 2 s and to `confirmed` after 5 s.
 - 401: not signed in. 404: unknown order, code `ORDER_NOT_FOUND`.
 
+### WebSocket /api/stock (live stock, D4-4)
+
+**An addition to the shared contract.** The brief asks for live stock, and no listed endpoint pushes data.
+
+- URL: `ws(s)://<host>/api/stock`, next to the REST base. No auth: stock is public.
+- Server → client messages, one per change: `{ "type": "stock", "productId": "p-0007", "stock": 12 }`
+- The client ignores anything that fails the `StockUpdateSchema` check.
+- The mock pushes a change every 2 s for one of the first 60 products and writes it to the mock database, so REST and the feed agree. **Mock panel → Drop live stock connection** closes the socket server-side, to show the client reconnecting.
+
 ## Error handling in the app
 
 `src/api/client.ts` turns every non-2xx response into an `ApiClientError` with a `kind`:

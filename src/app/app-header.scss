@@ -13,6 +13,10 @@
     white-space: nowrap;
   }
 
+  &__live-tag {
+    margin: 0;
+  }
+
   &__link {
     padding: $space-xs $space-sm;
     border-radius: $border-radius;

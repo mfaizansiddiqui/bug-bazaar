@@ -68,6 +68,15 @@ describe('cart logic', () => {
     expect(cart.lines).toEqual([])
   })
 
+  it('keeps the checkout key when a stock update leaves the quantities unchanged', () => {
+    let cart = cartWith(addToCart({ product: coffee, quantity: 2 }), checkoutStarted())
+    const key = cart.checkoutKey
+    cart = cartReducer(cart, stockChanged({ productId: coffee.id, stock: 7 }))
+    expect(cart.checkoutKey).toBe(key)
+    cart = cartReducer(cart, stockChanged({ productId: coffee.id, stock: 1 }))
+    expect(cart.checkoutKey).toBeNull()
+  })
+
   it('keeps one checkout key across retries, and resets it when the cart changes', () => {
     let cart = cartWith(addToCart({ product: duck, quantity: 1 }), checkoutStarted())
     const firstKey = cart.checkoutKey

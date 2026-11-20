@@ -60,6 +60,17 @@ export const OrderSchema = z.object({
 })
 export type Order = z.infer<typeof OrderSchema>
 
+/**
+ * Live stock message (D4-4). Pushed over the WebSocket at /api/stock. This channel is an
+ * addition to the shared contract, documented in docs/api-contract.md.
+ */
+export const StockUpdateSchema = z.object({
+  type: z.literal('stock'),
+  productId: z.string(),
+  stock: z.number().int().nonnegative(),
+})
+export type StockUpdate = z.infer<typeof StockUpdateSchema>
+
 /* Request shapes */
 
 export const PRODUCT_SORTS = ['relevance', 'price-asc', 'price-desc', 'rating', 'name'] as const

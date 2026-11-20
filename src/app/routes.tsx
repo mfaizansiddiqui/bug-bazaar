@@ -12,11 +12,11 @@ import { ProductListPage } from '@/features/products/ProductListPage'
 import { App } from './App'
 
 /** Route table, shared by the browser router (main.tsx) and the memory router in tests. */
-export function createRoutes({ showMockControls = false } = {}): RouteObject[] {
+export function createRoutes({ showMockControls = false, liveStock = false } = {}): RouteObject[] {
   return [
     {
       path: '/',
-      element: <App showMockControls={showMockControls} />,
+      element: <App showMockControls={showMockControls} liveStock={liveStock} />,
       // A crash anywhere in the route tree shows the fallback and is logged (D4-7).
       errorElement: <RouteErrorFallback />,
       children: [

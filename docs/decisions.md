@@ -130,3 +130,17 @@ Each entry gives what was chosen, what else was considered, and why.
 
 - **Considered:** GitLab CI, CircleCI; Vercel or Netlify for deploy.
 - **Why:** the repo is already on GitHub, so Actions needs no extra account. One `check` job runs lint → type check → formatting → tests → build, in that order so the cheapest checks fail first. Branch protection requiring `check` is what makes a failing test block the merge: the workflow alone only reports. Pages is enough for the bonus deploy because the app is static and the mock API runs in the browser. It needs two small changes: a base path (`VITE_BASE` → Vite `base` and the router `basename`) and copying `index.html` to `404.html` so deep links load the app.
+
+## Live stock: WebSocket with reconnect and backoff
+
+- **Considered:**
+  - **Polling** (refetch every N seconds): simplest, works through any proxy, and cheap to build. But it is wasteful (most polls return nothing new), adds up to N seconds of delay, and multiplies server load by the number of open tabs.
+  - **Server-Sent Events:** a one-way server → client stream over plain HTTP, with built-in reconnect (`EventSource`). A very good fit for stock, which only flows one way. I'd pick SSE for a real backend if nothing else needed a socket.
+  - **WebSocket (chosen):** a full-duplex connection that stays open. The task is named after it, it lets the client send messages later (e.g. subscribe only to products on screen), and MSW can mock it in the browser.
+- **How it works:**
+  - `connectLiveStock` opens `ws(s)://…/api/stock` and validates each message with Zod.
+  - `applyStockUpdate` writes the new stock into every cached list page, the cached product and the cart, which shrinks a quantity above the new stock. There's no refetch.
+  - **Recovery:** on an unexpected close it reconnects after 0.5 s, 1 s, 2 s … up to 30 s, plus up to 250 ms of random jitter so all clients don't reconnect at once. The delay resets after a successful connection.
+  - **Stopping:** `useLiveStock` runs in the app shell. Its effect cleanup calls `stop()`, which closes the socket with code 1000 and cancels any pending reconnect, so nothing runs after the app unmounts or the page closes. The header tag shows Connecting / Live stock / Reconnecting.
+- **A bug avoided:** a stock update used to reset the checkout idempotency key. Now `stockChanged` only resets it when the cart's quantities actually change. Otherwise a stock push arriving between a lost order response and the retry would give the retry a new key, which could create a duplicate order.
+- Tests use a fake socket with fake timers, so reconnects and backoff are tested deterministically. The live mock socket is registered only in the browser worker.
