@@ -65,9 +65,14 @@ export type Order = z.infer<typeof OrderSchema>
 export const PRODUCT_SORTS = ['relevance', 'price-asc', 'price-desc', 'rating', 'name'] as const
 export type ProductSort = (typeof PRODUCT_SORTS)[number]
 
+/** Fixed page size for GET /api/products (see docs/api-contract.md). */
+export const PRODUCTS_PAGE_SIZE = 50
+
 export interface ProductQuery {
   search?: string
   category?: Category
+  /** Extension to the shared contract, needed for the D2-2 in-stock filter. */
+  inStock?: boolean
   sort?: ProductSort
   page?: number
 }

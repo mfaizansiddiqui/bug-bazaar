@@ -37,6 +37,16 @@ Each entry gives what was chosen, what else was considered, and why.
 - **Considered:** Jest.
 - **Why:** Vitest reuses the Vite config and aliases, so no separate Babel or ts-jest setup is needed. Testing Library pushes tests toward user-visible behavior.
 
+## Contract extension: `inStock` filter and a fixed page size of 50
+
+- **Considered:** filtering stock on the client, or fetching all 5,000 products at once.
+- **Why:** the list is paged on the server, so filtering only the current page on the client would give wrong totals and short pages. A server-side `inStock=true` param keeps `total` correct. It's optional, so it doesn't break the shared contract for anyone who doesn't send it. A fixed page size of 50 keeps responses small, and Day 4 can load more pages as the user scrolls.
+
+## Mock error triggers: a dev panel plus natural cases
+
+- **Considered:** magic query params (`?fail=500`), separate test-only handlers.
+- **Why:** the panel can force every documented status on every route without changing app code or URLs, so URL filters stay clean. Latency modes make loading states and out-of-order responses (D2-6) easy to show. Natural cases (wrong password, ordering 2 of `p-0001`) still work for the walkthrough.
+
 ## Planned (recorded when the feature starts)
 
 - React Router for URL-synced filters (D2-2).

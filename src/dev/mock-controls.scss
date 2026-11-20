@@ -1,0 +1,11 @@
+@use '@/styles/variables' as *;
+
+.mock-controls {
+  &__toggle {
+    inset-inline-start: $space-lg;
+  }
+
+  &__body {
+    width: 100%;
+  }
+}

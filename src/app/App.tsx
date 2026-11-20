@@ -1,10 +1,16 @@
 import { Col, Layout, Row, Typography } from 'antd'
+import { MockControls } from '@/dev/MockControls'
 import './app.scss'
 
 const { Header, Content, Footer } = Layout
 
+interface AppProps {
+  /** Shows the dev panel for the mock API. Off when a real backend is used. */
+  showMockControls?: boolean
+}
+
 /** App shell. Routes and feature screens plug into Content from Day 2. */
-export function App() {
+export function App({ showMockControls = false }: AppProps) {
   return (
     <Layout className="app">
       <Header className="app__header">
@@ -27,6 +33,7 @@ export function App() {
       <Footer className="app__footer">
         <Typography.Text type="secondary">The Bug Bazaar training project</Typography.Text>
       </Footer>
+      {showMockControls && <MockControls />}
     </Layout>
   )
 }

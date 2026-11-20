@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
-import { resetMockState } from '@/mocks/handlers'
+import { resetMockControls } from '@/mocks/controls'
+import { resetDb } from '@/mocks/db'
 import { server } from '@/mocks/server'
 
 // jsdom doesn't implement matchMedia, and antd's responsive Grid needs it.
@@ -23,7 +24,8 @@ beforeAll(() => {
 afterEach(() => {
   cleanup()
   server.resetHandlers()
-  resetMockState()
+  resetDb()
+  resetMockControls()
 })
 afterAll(() => {
   server.close()
