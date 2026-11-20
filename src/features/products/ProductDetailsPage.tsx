@@ -1,6 +1,8 @@
 import { Breadcrumb, Button, Col, Descriptions, Flex, Row, Skeleton, Typography } from 'antd'
 import { Link, useNavigate, useParams } from 'react-router'
+import { BackToTop } from '@/components/BackToTop'
 import { StatusView } from '@/components/StatusView'
+import { useWindowEvent } from '@/hooks/useWindowEvent'
 import { formatCents } from '@/lib/money'
 import { toRequestState } from '@/lib/toRequestState'
 import { useProduct } from './productQueries'
@@ -16,15 +18,35 @@ function neighbourIds(id: string): { previous: string | null; next: string | nul
   return { previous: number > 1 ? toId(number - 1) : null, next: toId(number + 1) }
 }
 
+function isTypingTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+  )
+}
+
+/**
+ * Product details. Switching products is safe (D2-4): each id has its own query key, so the
+ * page only ever shows data stored under the current id, and when the id changes TanStack
+ * Query aborts the old request through the AbortSignal passed to the API client.
+ */
 export function ProductDetailsPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const product = useProduct(id)
   const { previous, next } = neighbourIds(id)
 
+  // Arrow keys move between products. The listener is removed when the page closes.
+  useWindowEvent('keydown', (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return
+    if (event.key === 'ArrowLeft' && previous) void navigate(`/products/${previous}`)
+    if (event.key === 'ArrowRight' && next) void navigate(`/products/${next}`)
+  })
+
   return (
     <Flex vertical gap="large" className="product-details-page">
       <Breadcrumb items={[{ title: <Link to="/">Products</Link> }, { title: id }]} />
+      <BackToTop />
 
       <StatusView
         state={toRequestState(product)}

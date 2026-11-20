@@ -1,5 +1,6 @@
 import { Button, Flex, Pagination, Typography } from 'antd'
 import { PRODUCTS_PAGE_SIZE } from '@/api/contract'
+import { BackToTop } from '@/components/BackToTop'
 import { StatusView } from '@/components/StatusView'
 import { toRequestState } from '@/lib/toRequestState'
 import { ProductFilters } from './ProductFilters'
@@ -17,6 +18,7 @@ export function ProductListPage() {
   return (
     <Flex vertical gap="large" className="product-list-page">
       <Typography.Title level={1}>Products</Typography.Title>
+      <BackToTop />
       <ProductFilters
         filters={filters}
         onChange={setFilters}
