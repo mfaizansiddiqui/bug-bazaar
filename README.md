@@ -16,6 +16,10 @@ npm run dev               # http://localhost:5173
 
 No real backend is needed. The API is mocked with [MSW](https://mswjs.io).
 
+- **Demo login:** `dev@bugbazaar.test` / `password123`
+- **Mock controls:** the **Mock** button (bottom-left) forces any API error or slow, out-of-order responses. See [docs/api-contract.md](docs/api-contract.md).
+- Signing in is kept in memory only, so a page reload signs you out. Your cart is kept. See [docs/auth.md](docs/auth.md).
+
 ## Scripts
 
 | Script                 | What it does                                                           |

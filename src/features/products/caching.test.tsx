@@ -30,7 +30,8 @@ describe('caching (D3-5)', () => {
   it('reuses cached data when revisiting a page and when opening a product from the grid', async () => {
     const calls = countProductRequests()
     const user = userEvent.setup()
-    const { router } = renderApp('/')
+    // A search with one match keeps the page small. Caching works the same for any list.
+    const { router } = renderApp('/?search=last-one')
     const card = await screen.findByRole('link', { name: /Last-One Debugging Duck/ })
     expect(calls.list).toBe(1)
 

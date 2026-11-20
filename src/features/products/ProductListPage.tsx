@@ -1,4 +1,4 @@
-import { Button, Flex, Pagination, Typography } from 'antd'
+import { Button, Card, Flex, Pagination, Typography } from 'antd'
 import { PRODUCTS_PAGE_SIZE } from '@/api/contract'
 import { BackToTop } from '@/components/BackToTop'
 import { StatusView } from '@/components/StatusView'
@@ -17,15 +17,24 @@ export function ProductListPage() {
 
   return (
     <Flex vertical gap="large" className="product-list-page">
-      <Typography.Title level={1}>Products</Typography.Title>
+      <Flex vertical gap={4}>
+        <Typography.Title level={1} className="product-list-page__title">
+          Products
+        </Typography.Title>
+        <Typography.Text type="secondary">
+          Rubber ducks, mechanical keyboards, coffee and stickers for people who debug for a living.
+        </Typography.Text>
+      </Flex>
       <BackToTop />
-      <ProductFilters
-        filters={filters}
-        onChange={setFilters}
-        onClear={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-        total={products.data?.total}
-      />
+      <Card size="small">
+        <ProductFilters
+          filters={filters}
+          onChange={setFilters}
+          onClear={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+          total={products.data?.total}
+        />
+      </Card>
       <StatusView
         state={toRequestState(products)}
         onRetry={() => void products.refetch()}
