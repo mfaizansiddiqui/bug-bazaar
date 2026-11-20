@@ -19,8 +19,15 @@
     object-fit: cover;
   }
 
+  // Two-line clamp in CSS. antd's JS ellipsis measures every card after render, which is
+  // costly across a page of 50 cards. CSS clamps for free.
   &__name {
+    display: -webkit-box;
     min-height: 2.6em;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   &__price {

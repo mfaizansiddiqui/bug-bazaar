@@ -1,9 +1,13 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { resetMockControls } from '@/mocks/controls'
 import { resetDb } from '@/mocks/db'
 import { server } from '@/mocks/server'
+
+// A full page of 50 antd cards can take over a second to render in jsdom when test files
+// run in parallel, so findBy*/waitFor get more time than the 1 s default.
+configure({ asyncUtilTimeout: 5000 })
 
 // jsdom doesn't implement matchMedia, and antd's responsive Grid needs it.
 // The stub only covers the members antd calls, so it is typed as a Partial.

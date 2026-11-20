@@ -43,12 +43,18 @@ Copy `.env.example` to `.env`. Every variable starting with `VITE_` is bundled i
 
 ```
 src/
-  api/        contract.ts (Zod schemas and types), client.ts (the only place that calls fetch)
-  app/        App shell (routes and store arrive in Day 2 and 3)
-  mocks/      MSW handlers, fixtures and the test server
+  api/        contract.ts (Zod schemas and types), client.ts (the only place that calls fetch),
+              requestState.ts, errorCopy.ts (friendly error text)
+  app/        App shell, route table, query client
+  components/ shared UI: StatusView (loading/empty/error/success), BackToTop, NotFoundPage
+  dev/        Mock API controls panel (only when the mock is on)
+  features/   one folder per feature, e.g. products/ (pages, grid, filters, queries)
+  hooks/      reusable typed hooks: useDebouncedValue, useWindowEvent
+  lib/        small helpers: formatCents, toRequestState
+  mocks/      MSW handlers, seeded 5,000-product database, mock controls
   styles/     _variables.scss (mirrors theme tokens), main.scss (global rules)
   theme/      themeToken.ts and themeConfig.ts for the antd ConfigProvider
-  test/       Vitest setup
+  test/       Vitest setup and helpers (renderApp)
 docs/         api contract, decisions, AI notes and the other written tasks
 docs/ai/      per-day guides for AI assistants
 CLAUDE.md     always-on rules for Claude Code
@@ -58,7 +64,7 @@ UI.md         mandatory UI standard (Ant Design, SCSS with BEM, grid, theme)
 
 ## Tech stack
 
-React 19, TypeScript (strict), Vite, Ant Design with SCSS, Zod, MSW, Vitest and Testing Library. Each choice and its alternatives are recorded in [docs/decisions.md](docs/decisions.md).
+React 19, TypeScript (strict), Vite, React Router, TanStack Query, Ant Design with SCSS, Zod, MSW, Vitest and Testing Library. Each choice and its alternatives are recorded in [docs/decisions.md](docs/decisions.md).
 
 ## Troubleshooting
 

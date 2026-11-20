@@ -30,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         }
       >
-        <Typography.Title level={2} className="product-card__name" ellipsis={{ rows: 2 }}>
+        <Typography.Title level={2} className="product-card__name">
           {product.name}
         </Typography.Title>
         <Typography.Text strong className="product-card__price">

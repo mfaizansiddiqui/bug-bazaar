@@ -47,8 +47,40 @@ Each entry gives what was chosen, what else was considered, and why.
 - **Considered:** magic query params (`?fail=500`), separate test-only handlers.
 - **Why:** the panel can force every documented status on every route without changing app code or URLs, so URL filters stay clean. Latency modes make loading states and out-of-order responses (D2-6) easy to show. Natural cases (wrong password, ordering 2 of `p-0001`) still work for the walkthrough.
 
+## Routing: React Router 7 (data router)
+
+- **Considered:** TanStack Router, hand-rolled `history` handling.
+- **Why:** filters must live in the URL (D2-2). `useSearchParams` reads and writes the query string with push or replace, so Back and shared links work for free. `createMemoryRouter` with the same route table lets tests render the real app at any URL.
+
+## Server state: TanStack Query
+
+- **Considered:** `useEffect` + `useState` per page, RTK Query, SWR.
+- **Why:** a hand-written effect has to solve caching, request sharing, cancellation and stale responses itself. TanStack Query does all four: the query key is the cache key, the `queryFn` gets an `AbortSignal` that is passed to the API client, and requests whose key leaves the screen are cancelled. Redux Toolkit is still planned for the cart and session (D3-1), because those are client state, not server data. RTK Query would also work, but keeping server data out of Redux makes the server/client split explicit.
+
+## Filter state: the URL, not component state
+
+- **Considered:** `useState` in the page, Redux, `localStorage`.
+- **Why:** the brief requires that filters survive a refresh, that a copied link reproduces the view, and that Back works. Only the URL does all three. Discrete changes (category, sort, stock, page) push a history entry. Search uses `replace` after the debounce, so Back doesn't step through half-typed words. Invalid hand-edited values fall back to defaults instead of crashing.
+
+## UI states: one `StatusView` fed by a `RequestState` adapter
+
+- **Considered:** `isLoading`/`isError` checks in each page.
+- **Why:** one component makes loading, empty, error-with-retry and success look the same on every page (D2-3). `toRequestState` adapts a TanStack Query result to the D1-3 union, so pages don't depend on the fetching library, and the `switch` ends in `assertNever`, so a new state can't be forgotten. Error text comes from one map (`errorCopy`), so raw server messages never reach the screen.
+
+## Back to Top: our own component, not antd `FloatButton.BackTop`
+
+- **Considered:** antd's built-in `FloatButton.BackTop`.
+- **Why:** D2-4 is about owning a listener and its cleanup. Our `BackToTop` uses `useWindowEvent` (a passive scroll listener removed on unmount) and throttles to one check per animation frame, cancelling any pending frame on unmount. The built-in one would hide exactly what this task is meant to show.
+
+## Search race conditions: three layers
+
+- **Considered:** a manual "latest request id" check in a `useEffect`.
+- **Why:** every search must show results for the latest query, even when replies arrive out of order (D2-6).
+  1. **Debounce (300 ms):** a burst of typing sends one request instead of one per letter. This is an optimisation, not a fix on its own.
+  2. **Abort:** when the query key changes, TanStack Query aborts the old request through its `AbortSignal`.
+  3. **Key isolation (the real guarantee):** each response is stored under the query that asked for it, and the page only reads the current key. Even if the server ignores the abort and an old reply arrives last, it goes into its own cache entry and is never shown.
+- The test `searchRace.test.tsx` makes `duck` slow and `mug` fast, types both, and checks that `mug` results stay on screen after the `duck` reply lands.
+
 ## Planned (recorded when the feature starts)
 
-- React Router for URL-synced filters (D2-2).
-- TanStack Query for the server-state cache (D3-5). Its `queryFn` calls the typed client.
 - Redux Toolkit for cart and session (D3-1).

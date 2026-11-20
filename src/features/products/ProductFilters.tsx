@@ -42,10 +42,14 @@ export function ProductFilters({
 
   // When the URL changes from outside (Back, Clear, a pasted link), show its search text.
   // This is React's "adjust state during render" pattern: no effect, no extra render pass.
+  //
+  // Our own debounced commit also changes the URL. That change equals `debouncedSearch`, and
+  // must NOT be copied back into the input: the user may have typed more letters since,
+  // and overwriting them would eat their input on a slow device.
   const [lastUrlSearch, setLastUrlSearch] = useState(filters.search)
   if (filters.search !== lastUrlSearch) {
     setLastUrlSearch(filters.search)
-    setSearchText(filters.search)
+    if (filters.search !== debouncedSearch) setSearchText(filters.search)
   }
 
   // Commit the search to the URL once typing has settled. `replace` means each keystroke
