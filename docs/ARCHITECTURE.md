@@ -94,3 +94,20 @@ The brief asks for Redux Toolkit, so a natural question is why products aren't i
 - **What it fixed in practice.** The search race (D2-6) is handled because the query key is the filters: a late reply for an old search is stored under the old key and never shown. Switching products quickly cancels the old request through the `AbortSignal` passed to `client.ts`. Going back to the grid or opening a product the grid already loaded shows it instantly (`staleTime` 60 s, `initialData` from the list).
 - **What it costs.** Two state tools instead of one, so a new developer has to learn where each kind of state goes. The table above is the rule. Live stock touches both: it patches the query cache and also dispatches `stockChanged` so the cart can't hold more than the new stock.
 - **Alternative considered.** RTK Query keeps everything in Redux and would also work. Keeping server data out of Redux makes the server/client split visible in the code: if it's in Redux, the app owns it (see `docs/decisions.md`, "Server state: TanStack Query").
+
+## Design patterns
+
+### 1. Adapter: one shape for errors and request status
+
+- **Where:** `api/client.ts` turns every failure (HTTP status, network error, a body that fails Zod) into one `ApiClientError` with a `kind`. `lib/toRequestState.ts` turns a TanStack Query result into our own `RequestState` union. `api/errorCopy.ts` turns a `kind` into friendly text.
+- **Why:** the rest of the app depends on our shapes, not on `fetch` or TanStack Query. `StatusView` only knows `RequestState`; pages only switch on `error.kind`. If we swapped the data library or the backend's error format, only the adapter would change. It also enforces two rules from the brief in one place: payloads are validated at the boundary, and raw server messages never reach the screen.
+
+### 2. Custom hooks: logic separate from markup
+
+- **Where:** `useProductFilters` (filters ↔ URL), `useInfiniteProducts` and `useProduct` (server data), `useLiveStock` (socket lifetime), `useDebouncedValue`, `useWindowEvent` and `useInView` (generic browser behavior), `useLogout`.
+- **Why:** each hook owns one job, including its cleanup. For example, `useLiveStock` opens the feed in an effect and stops it in the cleanup, so no component has to remember to close a socket. The generic hooks are reused (`useDebouncedValue` for search, `useWindowEvent` for Back to Top and arrow keys on the details page) and are tested on their own in `hooks.test.ts`.
+
+### 3. Container and presentational components
+
+- **Where:** `ProductListPage` is the container: it reads filters with `useProductFilters` and data with `useInfiniteProducts`, and decides which state to show. `ProductGrid` and `ProductCard` are presentational: they take `products` / `product` as props and never fetch or read the URL. `StatusView` is presentational too: it gets a `RequestState` and renders it.
+- **Why:** the presentational parts are easy to test and to reuse. `ProductGrid.perf.test.tsx` renders the grid with plain data and counts card renders, with no API involved. It also made the performance fix simple: because `ProductCard` only depends on its `product` prop, wrapping it in `React.memo` was enough to stop 49 of 50 cards re-rendering on a stock update.
