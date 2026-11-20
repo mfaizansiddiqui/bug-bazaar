@@ -1,6 +1,6 @@
 # The Bug Bazaar: rules for AI assistants
 
-Claude Code and Cursor both load this file in every conversation. Keep it short. Feature detail lives in `docs/ai/`, and UI rules live in `UI.md`.
+Claude Code loads this file in every conversation. Keep it short. Feature detail lives in `docs/ai/`, and UI rules live in `UI.md`.
 
 ## This is a scored training project
 

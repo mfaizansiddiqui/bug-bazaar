@@ -51,7 +51,8 @@ src/
   test/       Vitest setup
 docs/         api contract, decisions, AI notes and the other written tasks
 docs/ai/      per-day guides for AI assistants
-CLAUDE.md     always-on rules for Claude Code and Cursor
+CLAUDE.md     always-on rules for Claude Code
+.claude/skills/ react-review skill for Claude Code
 UI.md         mandatory UI standard (Ant Design, SCSS with BEM, grid, theme)
 ```
 

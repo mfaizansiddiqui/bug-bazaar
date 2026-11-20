@@ -1,7 +1,0 @@
----
-description: Day 1 foundation: API contract, typed client, data layer
-globs: src/api/**,src/mocks/**,src/types/**
-alwaysApply: false
----
-
-@docs/ai/foundation.md

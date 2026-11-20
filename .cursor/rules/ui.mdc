@@ -1,7 +1,0 @@
----
-description: Mandatory UI standard: Ant Design, SCSS with BEM, Row/Col grid, theme tokens
-globs: **/*.tsx,**/*.scss,src/theme/**
-alwaysApply: false
----
-
-Read and follow @UI.md before creating or editing any UI. Its rules are mandatory.

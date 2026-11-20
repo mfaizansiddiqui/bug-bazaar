@@ -1,7 +1,0 @@
----
-description: Day 4 harden: tests, CI, performance, live stock, monitoring
-globs: **/*.test.ts,**/*.test.tsx,src/test/**,.github/**,vite.config.ts
-alwaysApply: false
----
-
-@docs/ai/harden.md

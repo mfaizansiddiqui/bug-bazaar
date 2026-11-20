@@ -1,7 +1,0 @@
----
-description: Day 2 browse: product grid, URL filters, UI states, effects, hooks, race conditions
-globs: src/features/browse/**,src/features/products/**,src/hooks/**
-alwaysApply: false
----
-
-@docs/ai/browse.md
