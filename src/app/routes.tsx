@@ -3,6 +3,9 @@ import { NotFoundPage } from '@/components/NotFoundPage'
 import { AccountPage } from '@/features/auth/AccountPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
+import { CartPage } from '@/features/cart/CartPage'
+import { CheckoutPage } from '@/features/cart/CheckoutPage'
+import { OrderConfirmationPage } from '@/features/orders/OrderConfirmationPage'
 import { ProductDetailsPage } from '@/features/products/ProductDetailsPage'
 import { ProductListPage } from '@/features/products/ProductListPage'
 import { App } from './App'
@@ -16,11 +19,16 @@ export function createRoutes({ showMockControls = false } = {}): RouteObject[] {
       children: [
         { index: true, element: <ProductListPage /> },
         { path: 'products/:id', element: <ProductDetailsPage /> },
+        { path: 'cart', element: <CartPage /> },
         { path: 'login', element: <LoginPage /> },
         {
           // Everything below needs a signed-in user.
           element: <RequireAuth />,
-          children: [{ path: 'account', element: <AccountPage /> }],
+          children: [
+            { path: 'account', element: <AccountPage /> },
+            { path: 'checkout', element: <CheckoutPage /> },
+            { path: 'orders/:id', element: <OrderConfirmationPage /> },
+          ],
         },
         { path: '*', element: <NotFoundPage /> },
       ],

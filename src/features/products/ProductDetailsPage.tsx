@@ -1,5 +1,6 @@
-import { Breadcrumb, Button, Col, Descriptions, Flex, Row, Skeleton, Typography } from 'antd'
+import { Breadcrumb, Button, Card, Col, Flex, Rate, Row, Skeleton, Tag, Typography } from 'antd'
 import { Link, useNavigate, useParams } from 'react-router'
+import { AddToCart } from '@/features/cart/AddToCart'
 import { BackToTop } from '@/components/BackToTop'
 import { StatusView } from '@/components/StatusView'
 import { useWindowEvent } from '@/hooks/useWindowEvent'
@@ -55,33 +56,37 @@ export function ProductDetailsPage() {
         skeleton={<Skeleton active avatar paragraph={{ rows: 6 }} />}
       >
         {(data) => (
-          <Row gutter={[32, 24]}>
-            <Col xs={24} sm={24} md={12} lg={10} xl={10} xxl={8}>
-              <img
-                className="product-details-page__image"
-                src={data.imageUrl}
-                alt={data.name}
-                width={400}
-                height={300}
-              />
-            </Col>
-            <Col xs={24} sm={24} md={12} lg={14} xl={14} xxl={16}>
-              <Typography.Title level={1}>{data.name}</Typography.Title>
-              <Typography.Title level={2} className="product-details-page__price">
-                {formatCents(data.price)}
-              </Typography.Title>
-              <StockTag stock={data.stock} />
-              <Descriptions
-                className="product-details-page__facts"
-                column={1}
-                items={[
-                  { key: 'category', label: 'Category', children: data.category },
-                  { key: 'rating', label: 'Rating', children: `${String(data.rating)} / 5` },
-                  { key: 'id', label: 'Product ID', children: data.id },
-                ]}
-              />
-            </Col>
-          </Row>
+          <Card>
+            <Row gutter={[32, 24]}>
+              <Col xs={24} sm={24} md={12} lg={10} xl={10} xxl={10}>
+                <img
+                  className="product-details-page__image"
+                  src={data.imageUrl}
+                  alt={data.name}
+                  width={400}
+                  height={300}
+                />
+              </Col>
+              <Col xs={24} sm={24} md={12} lg={14} xl={14} xxl={14}>
+                <Flex vertical gap="middle">
+                  <Tag className="product-details-page__category">{data.category}</Tag>
+                  <Typography.Title level={1} className="product-details-page__name">
+                    {data.name}
+                  </Typography.Title>
+                  <Flex align="center" gap="small">
+                    <Rate disabled allowHalf value={data.rating} aria-label="Rating" />
+                    <Typography.Text type="secondary">{data.rating} / 5</Typography.Text>
+                  </Flex>
+                  <Typography.Title level={2} className="product-details-page__price">
+                    {formatCents(data.price)}
+                  </Typography.Title>
+                  <StockTag stock={data.stock} />
+                  <AddToCart product={data} />
+                  <Typography.Text type="secondary">Product ID {data.id}</Typography.Text>
+                </Flex>
+              </Col>
+            </Row>
+          </Card>
         )}
       </StatusView>
 

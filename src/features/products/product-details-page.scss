@@ -11,11 +11,13 @@
     object-fit: cover;
   }
 
-  &__price {
-    margin-top: 0;
+  &__category {
+    align-self: flex-start;
+    text-transform: capitalize;
   }
 
-  &__facts {
-    margin-top: $space-lg;
+  &__name,
+  &__price {
+    margin: 0;
   }
 }
