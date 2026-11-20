@@ -68,7 +68,17 @@ UI.md         mandatory UI standard (Ant Design, SCSS with BEM, grid, theme)
 
 ## Tech stack
 
-React 19, TypeScript (strict), Vite, React Router, TanStack Query, Ant Design with SCSS, Zod, MSW, Vitest and Testing Library. Each choice and its alternatives are recorded in [docs/decisions.md](docs/decisions.md).
+React 19, TypeScript (strict), Vite, React Router, TanStack Query, Redux Toolkit, Ant Design with SCSS, Zod, MSW, Vitest and Testing Library. Each choice and its alternatives are recorded in [docs/decisions.md](docs/decisions.md).
+
+## CI and deploy
+
+- **`.github/workflows/ci.yml`** runs on every pull request and every push to `main`: lint, type check, formatting, tests, build. Run the same locally with `npm run check && npm run build`.
+- **`.github/workflows/deploy.yml`** deploys `main` to GitHub Pages after the same checks, at `https://<user>.github.io/bug-bazaar/`. The mock API runs in the browser, so the deployed site works without a backend.
+
+One-time GitHub settings (repo owner):
+
+1. **Block merges on failure:** Settings → Branches → Add branch ruleset (or protection rule) for `main` → require a pull request and require the status check **`check`** to pass.
+2. **Enable Pages:** Settings → Pages → Source: **GitHub Actions**.
 
 ## Troubleshooting
 

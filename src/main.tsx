@@ -25,7 +25,10 @@ async function bootstrap(): Promise<void> {
 
   const store = createAppStore()
   const queryClient = createQueryClient()
-  const router = createBrowserRouter(createRoutes({ showMockControls: useMockApi }))
+  const router = createBrowserRouter(createRoutes({ showMockControls: useMockApi }), {
+    // Routes live under the deploy base, e.g. /bug-bazaar/ on GitHub Pages.
+    basename: import.meta.env.BASE_URL,
+  })
 
   installGlobalErrorHandlers()
 

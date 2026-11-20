@@ -2,6 +2,11 @@ import { CATEGORIES, type Category, type Product } from '@/api/contract'
 
 export const PRODUCT_COUNT = 5000
 
+/** Image path under the deploy base: /images/x.svg locally, /bug-bazaar/images/x.svg on Pages. */
+function imageFor(category: Category): string {
+  return `${import.meta.env.BASE_URL}images/${category}.svg`
+}
+
 /**
  * mulberry32: a tiny seeded PRNG. The same seed always gives the same 5,000 products,
  * so links, screenshots and tests stay stable across reloads.
@@ -67,7 +72,7 @@ export function seedProducts(seed = 42): Product[] {
       category,
       stock,
       rating: Math.round((2.5 + random() * 2.5) * 10) / 10,
-      imageUrl: `/images/${category}.svg`,
+      imageUrl: imageFor(category),
     })
   }
 
@@ -79,7 +84,7 @@ export function seedProducts(seed = 42): Product[] {
     category: 'ducks',
     stock: 1,
     rating: 4.9,
-    imageUrl: '/images/ducks.svg',
+    imageUrl: imageFor('ducks'),
   }
   return products
 }

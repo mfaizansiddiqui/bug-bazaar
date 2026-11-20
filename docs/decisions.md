@@ -120,3 +120,13 @@ Each entry gives what was chosen, what else was considered, and why.
   - **Order status (no):** the confirmation page polls every second until the order is final, because the user is waiting for exactly that change.
   - **User profile:** cached per session and removed on sign-out, so the next user never sees it.
 - Live stock over WebSockets (D4-4) will push updates straight into the same cache, shortening how stale stock can get while browsing.
+
+## Monitoring: our own error boundary and logger
+
+- **Considered:** `react-error-boundary`, Sentry's React SDK.
+- **Why:** D4-7 is about understanding how crashes are caught. React Router catches render errors inside routes first, so the root route has an `errorElement`. A small class `ErrorBoundary` covers everything above the router, and `window` listeners catch errors outside React (event handlers, promises). All three report to one `logError` with a swappable transport, so moving to Sentry later only changes `setLogTransport`. Details in `docs/monitoring.md`.
+
+## CI/CD: GitHub Actions, with GitHub Pages for deploy
+
+- **Considered:** GitLab CI, CircleCI; Vercel or Netlify for deploy.
+- **Why:** the repo is already on GitHub, so Actions needs no extra account. One `check` job runs lint → type check → formatting → tests → build, in that order so the cheapest checks fail first. Branch protection requiring `check` is what makes a failing test block the merge: the workflow alone only reports. Pages is enough for the bonus deploy because the app is static and the mock API runs in the browser. It needs two small changes: a base path (`VITE_BASE` → Vite `base` and the router `basename`) and copying `index.html` to `404.html` so deep links load the app.

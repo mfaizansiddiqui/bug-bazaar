@@ -4,6 +4,8 @@ import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // "/" locally. The GitHub Pages deploy sets VITE_BASE=/bug-bazaar/ (see deploy.yml).
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react()],
   resolve: {
     // Keep in sync with "paths" in tsconfig.app.json
