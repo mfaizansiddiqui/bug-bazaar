@@ -1,0 +1,7 @@
+---
+description: Day 5 explain: architecture docs, reviews, AI notes, submission
+globs: docs/**
+alwaysApply: false
+---
+
+@docs/ai/explain.md

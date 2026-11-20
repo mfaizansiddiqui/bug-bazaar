@@ -28,3 +28,6 @@ dist-ssr
 .env.*
 !.env.example
 coverage
+
+# Personal AI tool settings
+.claude/settings.local.json

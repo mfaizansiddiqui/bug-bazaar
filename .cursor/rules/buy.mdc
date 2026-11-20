@@ -1,0 +1,7 @@
+---
+description: Day 3 buy: Redux Toolkit cart and session, checkout, auth, errors, caching
+globs: src/features/cart/**,src/features/auth/**,src/features/checkout/**,src/app/store.ts
+alwaysApply: false
+---
+
+@docs/ai/buy.md
