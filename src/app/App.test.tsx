@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { renderApp } from '@/test/renderApp'
@@ -21,7 +21,10 @@ describe('browsing products', () => {
     firstCard.focus()
     await user.keyboard('{Enter}')
 
-    expect(router.state.location.pathname).toBe('/products/p-0001')
+    // The details page is a lazy route, so navigation completes once its code has loaded.
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/products/p-0001')
+    })
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Last-One Debugging Duck' }),
     ).toBeInTheDocument()

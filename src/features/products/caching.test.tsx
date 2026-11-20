@@ -37,7 +37,9 @@ describe('caching (D3-5)', () => {
 
     // Grid → details: the product is already in the list cache, so no request and no skeleton.
     await user.click(card)
-    expect(screen.getByRole('heading', { level: 1, name: 'Last-One Debugging Duck' })).toBeVisible()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Last-One Debugging Duck' }),
+    ).toBeVisible()
     expect(calls.detail).toBe(0)
 
     // Back to the grid: the list is still fresh, so it is not fetched again.

@@ -52,7 +52,8 @@ describe('error monitoring (D4-7)', () => {
     )
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: 'Open mock API controls' }))
+    // /cart is a lazy route, so wait for it to load.
+    await user.click(await screen.findByRole('button', { name: 'Open mock API controls' }))
     await user.click(await screen.findByRole('button', { name: 'Throw a test error' }))
 
     expect(await screen.findByText('Something broke on this page')).toBeVisible()

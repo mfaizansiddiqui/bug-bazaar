@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { StarFilled } from '@ant-design/icons'
 import { Card, Flex, Tag, Typography } from 'antd'
 import { Link } from 'react-router'
@@ -13,8 +14,12 @@ interface ProductCardProps {
 /**
  * One product in the grid. The whole card is a single link, so keyboard users get one
  * Tab stop per product and open it with Enter.
+ *
+ * Memoized (D4-2): when live stock changes one product, the list is rebuilt but every other
+ * product keeps the same object, so memo's shallow prop check skips their re-render.
+ * It only works because `product` is the only prop and is never recreated needlessly.
  */
-export function ProductCard({ product }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
   return (
     <Link to={`/products/${product.id}`} className="product-card">
       <Card
@@ -52,4 +57,4 @@ export function ProductCard({ product }: ProductCardProps) {
       </Card>
     </Link>
   )
-}
+})

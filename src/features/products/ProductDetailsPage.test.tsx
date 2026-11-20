@@ -31,6 +31,10 @@ describe('product details: effects and cleanup', () => {
     })
 
     const { router } = renderApp('/products/p-0002')
+    // Wait until the slow request is really in flight (the page is a lazy route), then switch.
+    await waitFor(() => {
+      expect([...signals.keys()].some((url) => url.endsWith('/products/p-0002'))).toBe(true)
+    })
     await act(() => router.navigate('/products/p-0003'))
 
     expect(await screen.findByRole('heading', { level: 1, name: fast.name })).toBeVisible()
