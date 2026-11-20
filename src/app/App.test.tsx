@@ -4,13 +4,19 @@ import { describe, expect, it } from 'vitest'
 import { renderApp } from '@/test/renderApp'
 
 describe('browsing products', () => {
-  it('shows the first page of products with prices formatted from cents', async () => {
+  it('shows products with prices formatted from cents, rendering only what is on screen', async () => {
     renderApp('/')
     const firstCard = await screen.findByRole('link', { name: /Last-One Debugging Duck/ })
     expect(firstCard).toHaveTextContent('$12.99')
     expect(firstCard).toHaveTextContent('Only 1 left')
-    const grid = screen.getByRole('list', { name: 'Products' })
-    expect(within(grid).getAllByRole('listitem')).toHaveLength(50)
+    expect(screen.getByText('Showing 50 of 5,000 products')).toBeVisible()
+
+    // Virtualized: 50 products are loaded, but only the rows near the viewport are in the DOM.
+    // Each item still tells assistive tech its position in the full list.
+    const items = within(screen.getByRole('list', { name: 'Products' })).getAllByRole('listitem')
+    expect(items.length).toBeLessThan(50)
+    expect(items[0]).toHaveAttribute('aria-posinset', '1')
+    expect(items[0]).toHaveAttribute('aria-setsize', '5000')
   })
 
   it('opens a product from the grid with the keyboard', async () => {

@@ -144,3 +144,13 @@ Each entry gives what was chosen, what else was considered, and why.
   - **Stopping:** `useLiveStock` runs in the app shell. Its effect cleanup calls `stop()`, which closes the socket with code 1000 and cancels any pending reconnect, so nothing runs after the app unmounts or the page closes. The header tag shows Connecting / Live stock / Reconnecting.
 - **A bug avoided:** a stock update used to reset the checkout idempotency key. Now `stockChanged` only resets it when the cart's quantities actually change. Otherwise a stock push arriving between a lost order response and the retry would give the retry a new key, which could create a duplicate order.
 - Tests use a fake socket with fake timers, so reconnects and backoff are tested deterministically. The live mock socket is registered only in the browser worker.
+
+## The 5,000-item list: infinite scroll + window virtualization
+
+- **Considered:**
+  - **Keep pagination (50 per page):** always fast, but a 5,000-item list never exists, so it dodges D4-3 rather than solving it.
+  - **`react-window`:** a fixed-size list or grid, which needs fixed row heights and its own scroll container.
+  - **CSS `content-visibility: auto`:** skips painting off-screen cards, but React still renders and keeps 5,000 cards in the DOM.
+  - **`@tanstack/react-virtual` (chosen):** headless, so cards stay antd components; window scrolling, so the page scrolls normally and the header stays sticky; measured row heights.
+- **Why:** infinite scroll (`useInfiniteQuery` + an IntersectionObserver `useInView` hook + a "Load more" button for keyboard users) turns the paged API into one list that can reach all 5,000 products. Windowing keeps the DOM at about 28 cards whatever the list length. Before/after numbers are in `docs/performance.md`.
+- **What changed for URLs:** the page number is no longer in the URL, since the list grows instead of paging. Filters, search and sort still are, so refresh, shared links and Back work as before.

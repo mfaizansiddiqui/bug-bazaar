@@ -7,6 +7,7 @@ These rules are **mandatory** for every `.tsx` and `.scss` file in this repo. Re
 - Build UI and layout only from Ant Design components (`Layout`, `Flex`, `Space`, `Row`/`Col`, `Card`, `Typography`, `Button`, `Input`, `Form`, `Result`, `Skeleton`, `Empty`, …).
 - In component TSX, don't use raw `div`, `span`, `button` or `input` (enforced by ESLint).
 - No inline `style` props (enforced by ESLint). Use component props, theme tokens, or the component's SCSS file.
+  - **The one exception:** `src/features/products/ProductGrid.tsx`, the virtualized grid. It sets row `transform` and list `height` values computed while scrolling, which can't live in SCSS. ESLint allows `style` in that file only (`eslint.config.js`). Any new exception needs the same: a reason, a UI.md entry and a per-file ESLint override.
 - Use an existing Ant Design component before writing a custom one. If you need a custom one, compose it from Ant Design components.
 - The `index.html` document shell (`html`, `body`, `#root`) stays as plain HTML, because React needs a node to mount into.
 - Use `App.useApp()` for `message`, `notification` and `modal`, so they inherit the theme.

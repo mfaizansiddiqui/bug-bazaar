@@ -69,7 +69,7 @@ describe('product filters', () => {
   })
 
   it('ignores invalid values in a hand-edited link', () => {
-    const filters = parseFilters(new URLSearchParams('category=hats&sort=cheapest&page=-3'))
-    expect(filters).toMatchObject({ category: null, sort: 'relevance', page: 1 })
+    const filters = parseFilters(new URLSearchParams('category=hats&sort=cheapest'))
+    expect(filters).toMatchObject({ category: null, sort: 'relevance' })
   })
 })

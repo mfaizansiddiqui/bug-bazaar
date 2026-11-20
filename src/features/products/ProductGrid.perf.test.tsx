@@ -25,7 +25,8 @@ const UPDATES = 20
 describe('ProductGrid render cost (D4-2)', () => {
   it('re-renders only the card whose stock changed', () => {
     const page = seedProducts().slice(0, PAGE_SIZE)
-    const changed = page.map((item, index) => (index === 7 ? { ...item, stock: 0 } : item))
+    // Change a product that is on screen (the grid is virtualized, so far-away cards aren't mounted).
+    const changed = page.map((item, index) => (index === 1 ? { ...item, stock: 0 } : item))
     const durations: number[] = []
     let show: (next: Product[]) => void = () => undefined
 
@@ -55,7 +56,7 @@ describe('ProductGrid render cost (D4-2)', () => {
 
     for (let update = 0; update < UPDATES; update += 1) {
       act(() => {
-        // Alternate, so every update really changes product 7.
+        // Alternate, so every update really changes product 1.
         show(update % 2 === 0 ? changed : page)
       })
     }

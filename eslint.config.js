@@ -5,6 +5,22 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
+// UI.md rules enforced by lint. Kept as constants so the one documented exception below
+// can drop a single rule without repeating the others.
+const NO_INNER_HTML = {
+  selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+  message: 'Render text as text. dangerouslySetInnerHTML is not allowed.',
+}
+const NO_INLINE_STYLE = {
+  selector: "JSXAttribute[name.name='style']",
+  message:
+    'No inline styles. Use antd props, theme tokens, or the component SCSS file (see UI.md).',
+}
+const NO_RAW_ELEMENTS = {
+  selector: 'JSXOpeningElement[name.name=/^(div|span|button|input)$/]',
+  message: 'Use an Ant Design component instead of a raw div/span/button/input (see UI.md).',
+}
+
 export default defineConfig([
   globalIgnores(['dist', 'coverage', 'public/mockServiceWorker.js']),
   {
@@ -39,24 +55,14 @@ export default defineConfig([
         'error',
         { paths: [{ name: 'axios', message: 'Use the typed client in src/api/client.ts.' }] },
       ],
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
-          message: 'Render text as text. dangerouslySetInnerHTML is not allowed.',
-        },
-        {
-          selector: "JSXAttribute[name.name='style']",
-          message:
-            'No inline styles. Use antd props, theme tokens, or the component SCSS file (see UI.md).',
-        },
-        {
-          selector: 'JSXOpeningElement[name.name=/^(div|span|button|input)$/]',
-          message:
-            'Use an Ant Design component instead of a raw div/span/button/input (see UI.md).',
-        },
-      ],
+      'no-restricted-syntax': ['error', NO_INNER_HTML, NO_INLINE_STYLE, NO_RAW_ELEMENTS],
     },
+  },
+  {
+    // Documented exception (UI.md §1): the virtualized grid positions rows with runtime
+    // translateY/height values, which can only be set as inline styles.
+    files: ['src/features/products/ProductGrid.tsx'],
+    rules: { 'no-restricted-syntax': ['error', NO_INNER_HTML, NO_RAW_ELEMENTS] },
   },
   {
     // The one place allowed to touch the network, plus test/mock code

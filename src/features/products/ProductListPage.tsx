@@ -1,19 +1,20 @@
-import { Button, Card, Flex, Pagination, Typography } from 'antd'
-import { PRODUCTS_PAGE_SIZE } from '@/api/contract'
+import { Button, Card, Flex, Typography } from 'antd'
 import { BackToTop } from '@/components/BackToTop'
 import { StatusView } from '@/components/StatusView'
 import { toRequestState } from '@/lib/toRequestState'
+import { LoadMore } from './LoadMore'
 import { ProductFilters } from './ProductFilters'
 import { ProductGrid } from './ProductGrid'
 import { ProductGridSkeleton } from './ProductGridSkeleton'
-import { useProducts } from './productQueries'
+import { useInfiniteProducts } from './productQueries'
 import { toProductQuery, useProductFilters } from './useProductFilters'
 import './product-list-page.scss'
 
-/** Home page: filters, result count, product grid and paging, all driven by the URL. */
+/** Home page: filters, result count and one growing list of products, driven by the URL. */
 export function ProductListPage() {
   const { filters, setFilters, clearFilters, hasActiveFilters } = useProductFilters()
-  const products = useProducts(toProductQuery(filters))
+  const products = useInfiniteProducts(toProductQuery(filters))
+  const total = products.data?.pages[0]?.total
 
   return (
     <Flex vertical gap="large" className="product-list-page">
@@ -32,13 +33,13 @@ export function ProductListPage() {
           onChange={setFilters}
           onClear={clearFilters}
           hasActiveFilters={hasActiveFilters}
-          total={products.data?.total}
+          total={total}
         />
       </Card>
       <StatusView
         state={toRequestState(products)}
         onRetry={() => void products.refetch()}
-        isEmpty={(data) => data.items.length === 0}
+        isEmpty={(data) => (data.pages[0]?.total ?? 0) === 0}
         emptyTitle="No products match your filters"
         emptyAction={
           hasActiveFilters && (
@@ -49,22 +50,21 @@ export function ProductListPage() {
         }
         skeleton={<ProductGridSkeleton />}
       >
-        {(data) => (
-          <>
-            <ProductGrid products={data.items} />
-            <Pagination
-              className="product-list-page__pagination"
-              current={filters.page}
-              pageSize={PRODUCTS_PAGE_SIZE}
-              total={data.total}
-              showSizeChanger={false}
-              onChange={(page) => {
-                setFilters({ page })
-                window.scrollTo({ top: 0 })
-              }}
-            />
-          </>
-        )}
+        {(data) => {
+          const items = data.pages.flatMap((page) => page.items)
+          return (
+            <>
+              <ProductGrid products={items} total={data.pages[0]?.total ?? items.length} />
+              <LoadMore
+                shown={items.length}
+                total={data.pages[0]?.total ?? items.length}
+                hasMore={products.hasNextPage}
+                loading={products.isFetchingNextPage}
+                onLoadMore={() => void products.fetchNextPage()}
+              />
+            </>
+          )
+        }}
       </StatusView>
     </Flex>
   )

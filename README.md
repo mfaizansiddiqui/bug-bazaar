@@ -83,3 +83,4 @@ One-time GitHub settings (repo owner):
 ## Troubleshooting
 
 - **Windows: "Vitest failed to find the runner".** The terminal path has a lowercase drive letter (`e:\...`), so Vitest loads two copies of itself. Run the tests from a path with an uppercase drive letter, for example `cd E:\path\to\bug-bazaar`.
+- **Windows + Git Bash: the production build shows a blank page** ("Cannot read properties of null (reading 'useContext')"). Building from Git Bash (`/e/...`) can make the bundler resolve React through two differently-cased paths and include it twice. Run `npm run build` from PowerShell or cmd instead. CI (Linux) is not affected.
