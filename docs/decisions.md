@@ -27,6 +27,14 @@ Each entry gives what was chosen, what else was considered, and why.
 - **Considered:** MUI, plain CSS, Tailwind.
 - **Why:** antd provides accessible form, grid and feedback components (`Form`, `Row`/`Col`, `Result`, `Skeleton`), and theming works through design tokens. SCSS with BEM covers the few cases tokens can't. Rules are in `UI.md`.
 
+## Theme: "Ink & Crimson"
+
+- **What:** an original theme in the mood of Japanese ink prints. Rice-paper backgrounds (`#f6f1e7`), ink text and header (`#1c1a17`), crimson as the primary color (`#9e1b1b`), muted gold for ratings, moss green for stock, 4 px corners, and a serif display font (Shippori Mincho) for headings only. The logo is our own bug mark, styled as a seal stamp. No art, logos or names from any existing game or brand are used.
+- **Considered:** keeping the purple theme; a dark (ink background) version, which would make the 5,000-card grid heavier to read; serif for all text, which reads worse at small sizes.
+- **Contrast (WCAG AA, D4-1):** white on crimson is about 8:1; body grey `#5a5247` on paper about 6.9:1; placeholder `#6b6357` about 5.2:1; gold star `#8a6a1f` on white about 5:1; light crimson `#e8685a` on the ink header about 5.4:1 (plain crimson there would be about 2:1, so the header uses the lighter shade). Lighthouse accessibility stays at 100.
+- **Cost:** one web font request (two weights, `display=swap`, so text shows at once in a fallback serif). Only headings use it, so body text has no font delay.
+- **How:** colors and radius changed in `themeToken.ts` and `_variables.scss` together. The header-only colors and gold have no antd token, so they are SCSS-only variables.
+
 ## Auth token: in memory only
 
 - **Considered:** `localStorage`, `sessionStorage`, httpOnly cookie.

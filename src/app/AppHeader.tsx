@@ -37,7 +37,7 @@ export function AppHeader({ liveStatus }: AppHeaderProps) {
     <Flex align="center" justify="space-between" gap="middle" className="app-header">
       <Flex align="center" gap="middle">
         <Link to="/" className="app-header__brand" aria-label="The Bug Bazaar, home">
-          <BrandLogo compact={!screens.sm} />
+          <BrandLogo compact={!screens.sm} inverse />
         </Link>
         {liveTag && screens.sm && (
           <Tag
@@ -65,7 +65,9 @@ export function AppHeader({ liveStatus }: AppHeaderProps) {
               aria-label={`Account, ${user.name}`}
             >
               <Avatar size="small" icon={<UserOutlined />} className="app-header__avatar" />
-              {screens.md && <Typography.Text>{user.name}</Typography.Text>}
+              {screens.md && (
+                <Typography.Text className="app-header__name">{user.name}</Typography.Text>
+              )}
             </Link>
             <Button icon={<LogoutOutlined aria-hidden />} onClick={logout}>
               Sign out
