@@ -11,12 +11,23 @@ async function productNames(): Promise<string[]> {
     .map((heading) => heading.textContent)
 }
 
+/** Opens the Availability select and picks an option, as a user would. */
+async function chooseAvailability(user: ReturnType<typeof userEvent.setup>, label: string) {
+  await user.click(screen.getByRole('combobox', { name: 'Availability' }))
+  // antd renders each visible option with its label as the title. The last match is the
+  // option in the open dropdown (the select's own value can carry the same title).
+  const matches = await screen.findAllByTitle(label)
+  const option = matches.at(-1)
+  if (!option) throw new Error(`No "${label}" option`)
+  await user.click(option)
+}
+
 describe('product filters', () => {
   it('rebuilds the same view from a shared link (and so after a refresh)', async () => {
     renderApp('/?category=ducks&inStock=true&sort=price-asc&search=duck')
 
     expect(screen.getByLabelText('Search')).toHaveValue('duck')
-    expect(screen.getByRole('checkbox', { name: 'In stock only' })).toBeChecked()
+    expect(screen.getByTitle('In stock')).toBeVisible()
     const names = await productNames()
     expect(names.length).toBeGreaterThan(0)
     expect(names.every((name) => name.toLowerCase().includes('duck'))).toBe(true)
@@ -27,15 +38,29 @@ describe('product filters', () => {
     const { router } = renderApp('/')
     await productNames()
 
-    await user.click(screen.getByRole('checkbox', { name: 'In stock only' }))
+    await chooseAvailability(user, 'In stock')
     expect(router.state.location.search).toBe('?inStock=true')
     expect(await screen.findByText(/^[\d,]+ products$/)).toBeVisible()
 
     await router.navigate(-1)
     await waitFor(() => {
-      expect(screen.getByRole('checkbox', { name: 'In stock only' })).not.toBeChecked()
+      expect(screen.getByTitle('All products')).toBeVisible()
     })
     expect(router.state.location.search).toBe('')
+  })
+
+  it('shows only sold-out products with the out-of-stock filter', async () => {
+    const user = userEvent.setup()
+    const { router } = renderApp('/')
+    await productNames()
+
+    await chooseAvailability(user, 'Out of stock')
+    expect(router.state.location.search).toBe('?inStock=false')
+    const grid = await screen.findByRole('list', { name: 'Products' })
+    await waitFor(() => {
+      const tags = within(grid).getAllByText(/stock|left/)
+      expect(tags.every((tag) => tag.textContent === 'Out of stock')).toBe(true)
+    })
   })
 
   it('shows the result count and clears every filter', async () => {
@@ -71,5 +96,6 @@ describe('product filters', () => {
   it('ignores invalid values in a hand-edited link', () => {
     const filters = parseFilters(new URLSearchParams('category=hats&sort=cheapest'))
     expect(filters).toMatchObject({ category: null, sort: 'relevance' })
+    expect(parseFilters(new URLSearchParams('inStock=maybe')).availability).toBe('all')
   })
 })

@@ -146,7 +146,7 @@ function toSearchParams(query: ProductQuery): string {
   const params = new URLSearchParams()
   if (query.search) params.set('search', query.search)
   if (query.category) params.set('category', query.category)
-  if (query.inStock) params.set('inStock', 'true')
+  if (query.inStock !== undefined) params.set('inStock', String(query.inStock))
   if (query.sort) params.set('sort', query.sort)
   if (query.page !== undefined) params.set('page', String(query.page))
   const text = params.toString()

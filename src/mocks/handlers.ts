@@ -72,7 +72,8 @@ export const handlers = [
     const params = new URL(request.url).searchParams
     const search = params.get('search')?.trim().toLowerCase() ?? ''
     const category = CategorySchema.safeParse(params.get('category'))
-    const inStock = params.get('inStock') === 'true'
+    // "true": only in stock. "false": only sold out. Anything else: no stock filter.
+    const inStock = params.get('inStock')
     const sort = params.get('sort') ?? 'relevance'
     const page = Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1)
 
@@ -80,7 +81,8 @@ export const handlers = [
       (product) =>
         (!search || product.name.toLowerCase().includes(search)) &&
         (!category.success || product.category === category.data) &&
-        (!inStock || product.stock > 0),
+        (inStock !== 'true' || product.stock > 0) &&
+        (inStock !== 'false' || product.stock === 0),
     )
     const sorter = isSort(sort) ? SORTERS[sort] : null
     if (sorter) items = [...items].sort(sorter)

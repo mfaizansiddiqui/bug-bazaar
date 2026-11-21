@@ -3,7 +3,14 @@
 .product-filters {
   width: 100%;
 
-  &__actions {
-    text-align: end;
+  &__icon {
+    color: $color-text-placeholder;
+  }
+
+  // Count and Clear sit on their own line under the fields, split by a hairline.
+  &__footer {
+    margin-top: $space-md;
+    padding-top: $space-md;
+    border-top: 1px solid $color-border;
   }
 }

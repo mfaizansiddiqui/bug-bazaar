@@ -41,6 +41,7 @@ Each entry gives what was chosen, what else was considered, and why.
 
 - **Considered:** filtering stock on the client, or fetching all 5,000 products at once.
 - **Why:** the list is paged on the server, so filtering only the current page on the client would give wrong totals and short pages. A server-side `inStock=true` param keeps `total` correct. It's optional, so it doesn't break the shared contract for anyone who doesn't send it. A fixed page size of 50 keeps responses small, and Day 4 can load more pages as the user scrolls.
+- **Later change (out-of-stock filter):** `inStock=false` now means "only sold-out products". The UI's in-stock checkbox became an "Availability" select (All / In stock / Out of stock), which also lines up with the other filters. Considered a second param such as `outOfStock=true`, but two booleans allow a contradictory pair (`inStock=true&outOfStock=true`). One param with three states (true, false, absent) can't. The URL uses the same `inStock` values, so old shared links still work.
 
 ## Mock error triggers: a dev panel plus natural cases
 

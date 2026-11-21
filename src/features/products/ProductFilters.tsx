@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Button, Checkbox, Col, Form, Input, Row, Select, Typography } from 'antd'
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Col, ConfigProvider, Flex, Form, Input, Row, Select, Typography } from 'antd'
 import { CATEGORIES, type Category, type ProductSort } from '@/api/contract'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import type { ProductFilters as Filters } from './useProductFilters'
+import type { Availability, ProductFilters as Filters } from './useProductFilters'
 import './product-filters.scss'
 
 const SEARCH_DEBOUNCE_MS = 300
@@ -13,6 +14,12 @@ const SORT_OPTIONS: { value: ProductSort; label: string }[] = [
   { value: 'price-desc', label: 'Price: high to low' },
   { value: 'rating', label: 'Top rated' },
   { value: 'name', label: 'Name: A to Z' },
+]
+
+const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
+  { value: 'all', label: 'All products' },
+  { value: 'inStock', label: 'In stock' },
+  { value: 'outOfStock', label: 'Out of stock' },
 ]
 
 const CATEGORY_OPTIONS = CATEGORIES.map((category) => ({
@@ -61,75 +68,84 @@ export function ProductFilters({
   }, [debouncedSearch, searchText, filters.search, onChange])
 
   return (
-    <Form layout="vertical" className="product-filters" role="search">
-      <Row gutter={[16, 0]} align="bottom">
-        <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-          <Form.Item label="Search" htmlFor="product-search">
-            <Input
-              id="product-search"
-              type="search"
-              allowClear
-              placeholder="Ducks, keyboards, coffee…"
-              value={searchText}
-              onChange={(event) => {
-                setSearchText(event.target.value)
-              }}
-            />
-          </Form.Item>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
-          <Form.Item label="Category" htmlFor="product-category">
-            <Select<Category>
-              id="product-category"
-              allowClear
-              placeholder="All categories"
-              options={CATEGORY_OPTIONS}
-              value={filters.category ?? undefined}
-              onChange={(category: Category | undefined) => {
-                onChange({ category: category ?? null })
-              }}
-            />
-          </Form.Item>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
-          <Form.Item label="Sort by" htmlFor="product-sort">
-            <Select<ProductSort>
-              id="product-sort"
-              options={SORT_OPTIONS}
-              value={filters.sort}
-              onChange={(sort) => {
-                onChange({ sort })
-              }}
-            />
-          </Form.Item>
-        </Col>
-        <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-          <Form.Item>
-            <Checkbox
-              checked={filters.inStock}
-              onChange={(event) => {
-                onChange({ inStock: event.target.checked })
-              }}
-            >
-              In stock only
-            </Checkbox>
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={[16, 8]} align="middle" justify="space-between">
-        <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12}>
+    // Scoped token: the Row gutter spaces the fields, so Form.Item needs no bottom margin here.
+    <ConfigProvider theme={{ components: { Form: { itemMarginBottom: 0 } } }}>
+      <Form layout="vertical" className="product-filters" role="search">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={24} md={24} lg={9} xl={9} xxl={9}>
+            <Form.Item label="Search" htmlFor="product-search">
+              <Input
+                id="product-search"
+                type="search"
+                allowClear
+                prefix={<SearchOutlined aria-hidden className="product-filters__icon" />}
+                placeholder="Ducks, keyboards, coffee…"
+                value={searchText}
+                onChange={(event) => {
+                  setSearchText(event.target.value)
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
+            <Form.Item label="Category" htmlFor="product-category">
+              <Select<Category>
+                id="product-category"
+                allowClear
+                placeholder="All categories"
+                options={CATEGORY_OPTIONS}
+                value={filters.category ?? undefined}
+                onChange={(category: Category | undefined) => {
+                  onChange({ category: category ?? null })
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
+            <Form.Item label="Availability" htmlFor="product-availability">
+              <Select<Availability>
+                id="product-availability"
+                options={AVAILABILITY_OPTIONS}
+                value={filters.availability}
+                onChange={(availability) => {
+                  onChange({ availability })
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={8} lg={5} xl={5} xxl={5}>
+            <Form.Item label="Sort by" htmlFor="product-sort">
+              <Select<ProductSort>
+                id="product-sort"
+                options={SORT_OPTIONS}
+                value={filters.sort}
+                onChange={(sort) => {
+                  onChange({ sort })
+                }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Flex
+          justify="space-between"
+          align="center"
+          gap="small"
+          className="product-filters__footer"
+        >
           <Typography.Text strong aria-live="polite">
             {total === undefined
               ? 'Loading products…'
               : `${total.toLocaleString('en-US')} ${total === 1 ? 'product' : 'products'}`}
           </Typography.Text>
-        </Col>
-        <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12} className="product-filters__actions">
-          <Button onClick={onClear} disabled={!hasActiveFilters}>
+          <Button
+            icon={<CloseCircleOutlined aria-hidden />}
+            onClick={onClear}
+            disabled={!hasActiveFilters}
+          >
             Clear filters
           </Button>
-        </Col>
-      </Row>
-    </Form>
+        </Flex>
+      </Form>
+    </ConfigProvider>
   )
 }
