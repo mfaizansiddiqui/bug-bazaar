@@ -1,6 +1,6 @@
 # Testing
 
-**82 tests in 20 files**, all passing in CI (`npm test`). Run one area with e.g. `npx vitest run src/features/cart`.
+**84 tests in 20 files**, all passing in CI (`npm test`). Run one area with e.g. `npx vitest run src/features/cart`.
 
 ## Approach: test behavior, not implementation
 
