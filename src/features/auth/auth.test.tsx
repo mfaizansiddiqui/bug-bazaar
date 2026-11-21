@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -28,6 +28,23 @@ describe('login and protected routes', () => {
       expect(router.state.location.pathname).toBe('/account')
     })
     expect(await screen.findByText(DEMO_USER.email)).toBeVisible()
+  })
+
+  it('swaps Sign in for the account link and Sign out in the header, and back', async () => {
+    const { router } = renderApp('/login')
+    const nav = await screen.findByRole('navigation', { name: 'Main' })
+    expect(within(nav).getByRole('link', { name: 'Sign in' })).toBeVisible()
+
+    const user = await fillLogin(DEMO_USER.email, DEMO_PASSWORD)
+    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+
+    const signOut = await within(nav).findByRole('button', { name: 'Sign out' })
+    expect(within(nav).getByRole('link', { name: `Account, ${DEMO_USER.name}` })).toBeVisible()
+    expect(within(nav).queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument()
+
+    await user.click(signOut)
+    expect(await within(nav).findByRole('link', { name: 'Sign in' })).toBeVisible()
+    expect(router.state.location.pathname).toBe('/')
   })
 
   it('announces wrong credentials without leaving the page', async () => {

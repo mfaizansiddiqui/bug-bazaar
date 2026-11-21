@@ -1,6 +1,11 @@
-import { LoginOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
-import { Badge, Button, Flex, Grid, Tag, Typography } from 'antd'
-import { Link, useNavigate } from 'react-router'
+import {
+  LoginOutlined,
+  LogoutOutlined,
+  ShoppingCartOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
+import { Avatar, Badge, Button, Flex, Grid, Tag, Typography } from 'antd'
+import { Link } from 'react-router'
 import type { LiveStockStatus } from '@/api/liveStock'
 import { useAppSelector } from '@/app/hooks'
 import { BrandLogo } from '@/components/BrandLogo'
@@ -22,7 +27,6 @@ interface AppHeaderProps {
 
 /** Top bar: brand, live stock status, cart badge (a derived value, D3-1), sign-in state. */
 export function AppHeader({ liveStatus }: AppHeaderProps) {
-  const navigate = useNavigate()
   const cartCount = useAppSelector(selectCartCount)
   const user = useAppSelector(selectUser)
   const logout = useLogout()
@@ -51,25 +55,26 @@ export function AppHeader({ liveStatus }: AppHeaderProps) {
         <Link to="/" className="app-header__link">
           Shop
         </Link>
+        {/* Signed in shows who you are plus Sign out; signed out shows only Sign in. The
+            session lives in memory (docs/auth.md), so a page reload signs you out. */}
         {user ? (
           <>
-            <Link to="/account" className="app-header__link">
-              <UserOutlined aria-hidden /> {user.name}
+            <Link
+              to="/account"
+              className="app-header__link app-header__account"
+              aria-label={`Account, ${user.name}`}
+            >
+              <Avatar size="small" icon={<UserOutlined />} className="app-header__avatar" />
+              {screens.md && <Typography.Text>{user.name}</Typography.Text>}
             </Link>
-            <Button type="text" onClick={logout}>
+            <Button icon={<LogoutOutlined aria-hidden />} onClick={logout}>
               Sign out
             </Button>
           </>
         ) : (
-          <Button
-            type="text"
-            icon={<LoginOutlined />}
-            onClick={() => {
-              void navigate('/login')
-            }}
-          >
-            Sign in
-          </Button>
+          <Link to="/login" className="app-header__sign-in">
+            <LoginOutlined aria-hidden /> Sign in
+          </Link>
         )}
         <Link
           to="/cart"

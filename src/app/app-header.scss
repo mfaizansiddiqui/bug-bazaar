@@ -27,6 +27,35 @@
     color: $color-text-base;
   }
 
+  &__account {
+    display: inline-flex;
+    gap: $space-sm;
+    align-items: center;
+  }
+
+  &__avatar {
+    background: $color-primary;
+  }
+
+  // A link (it navigates) that looks like antd's primary button.
+  &__sign-in {
+    display: inline-flex;
+    gap: $space-sm;
+    align-items: center;
+    height: 32px;
+    padding: 0 $space-md;
+    border-radius: $border-radius;
+    background: $color-primary;
+    color: $color-bg-container;
+    font-weight: 500;
+
+    &:hover,
+    &:focus-visible {
+      background: $color-primary-hover;
+      color: $color-bg-container;
+    }
+  }
+
   &__cart {
     padding-inline: $space-md;
   }
