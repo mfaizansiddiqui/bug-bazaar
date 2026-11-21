@@ -18,16 +18,23 @@ export function ProductListPage() {
 
   return (
     <Flex vertical gap="large" className="product-list-page">
-      <Flex vertical gap={4}>
-        <Typography.Title level={1} className="product-list-page__title">
-          Products
-        </Typography.Title>
-        <Typography.Text type="secondary">
-          Rubber ducks, mechanical keyboards, coffee and stickers for people who debug for a living.
+      <Flex vertical gap="small" className="product-list-page__hero">
+        <Typography.Text className="product-list-page__eyebrow">
+          Gear for developers
         </Typography.Text>
+        {/* Own group: antd adds a top margin to a heading that follows other Typography. */}
+        <Flex vertical gap="small">
+          <Typography.Title level={1} className="product-list-page__title">
+            Products
+          </Typography.Title>
+          <Typography.Paragraph type="secondary" className="product-list-page__lead">
+            Rubber ducks, mechanical keyboards, coffee and stickers for people who debug for a
+            living. Stock updates live, so what you see is what's on the shelf.
+          </Typography.Paragraph>
+        </Flex>
       </Flex>
       <BackToTop />
-      <Card size="small">
+      <Card className="product-list-page__filters">
         <ProductFilters
           filters={filters}
           onChange={setFilters}

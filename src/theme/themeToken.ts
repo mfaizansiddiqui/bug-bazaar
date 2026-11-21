@@ -11,6 +11,7 @@ export const globalToken: NonNullable<ThemeConfig['token']> = {
   colorPrimary: '#5b3df5',
   // Darker on hover (antd's default is lighter), so white text keeps its contrast.
   colorPrimaryHover: '#4a2fd6',
+  colorPrimaryBg: '#f0edff',
   // Status colors are dark enough for 4.5:1 text contrast on antd's light status backgrounds
   // (D4-1). antd uses these for Tag, Alert and Result text, not just icons.
   colorSuccess: '#1d6b30',

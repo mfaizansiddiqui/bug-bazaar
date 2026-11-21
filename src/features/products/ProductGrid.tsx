@@ -5,11 +5,13 @@ import type { Product } from '@/api/contract'
 import { ProductCard } from './ProductCard'
 import './product-grid.scss'
 
-/** Cards per row at each antd breakpoint. Matches the Col spans below (24 / span). */
+/**
+ * Cards per row at each antd breakpoint. Matches the Col spans below (24 / span).
+ * The page is at most 1200 px wide, so 4 per row is the most that keeps names readable.
+ */
 function useColumns(): number {
   const screens = Grid.useBreakpoint()
-  if (screens.xxl) return 6
-  if (screens.lg) return 4
+  if (screens.xl) return 4
   if (screens.md) return 3
   if (screens.sm) return 2
   return 1
@@ -90,9 +92,9 @@ export function ProductGrid({ products, total = products.length }: ProductGridPr
                 xs={24}
                 sm={12}
                 md={8}
-                lg={6}
+                lg={8}
                 xl={6}
-                xxl={4}
+                xxl={6}
               >
                 <ProductCard product={product} />
               </Col>

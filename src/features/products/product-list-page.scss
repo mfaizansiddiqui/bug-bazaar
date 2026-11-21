@@ -3,11 +3,39 @@
 .product-list-page {
   width: 100%;
 
-  &__title {
+  // A soft tinted banner: brand color without competing with the product images.
+  &__hero {
+    padding: $space-lg;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-lg;
+    background: linear-gradient(135deg, $color-primary-bg 0%, $color-bg-container 70%);
+
+    @media (min-width: $screen-md) {
+      padding: $space-xl $space-xl * 1.25;
+    }
+  }
+
+  &__eyebrow {
+    color: $color-primary;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  // Paired with .ant-typography to outrank antd's heading and paragraph margins; the
+  // Flex gap does the spacing instead (same approach as the card title).
+  &__title.ant-typography {
     margin: 0;
   }
 
-  &__pagination {
-    align-self: center;
+  &__lead.ant-typography {
+    max-width: 640px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  &__filters {
+    width: 100%;
   }
 }

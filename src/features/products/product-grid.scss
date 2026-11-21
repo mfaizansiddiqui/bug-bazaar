@@ -5,11 +5,13 @@
   width: 100%;
 
   // Rows are stacked at the top and moved into place with translateY (see ProductGrid.tsx).
+  // left + right (not width: 100%) let the Row's negative gutter margins widen it, so the
+  // cards line up with both edges of the filter card above.
   &__row {
     position: absolute;
     top: 0;
+    right: 0;
     left: 0;
-    width: 100%;
     padding-bottom: $space-md;
   }
 }
