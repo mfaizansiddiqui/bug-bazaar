@@ -1,8 +1,9 @@
-import { BugOutlined, LoginOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
-import { Badge, Button, Flex, Tag, Typography } from 'antd'
+import { LoginOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
+import { Badge, Button, Flex, Grid, Tag, Typography } from 'antd'
 import { Link, useNavigate } from 'react-router'
 import type { LiveStockStatus } from '@/api/liveStock'
 import { useAppSelector } from '@/app/hooks'
+import { BrandLogo } from '@/components/BrandLogo'
 import { useLogout } from '@/features/auth/useLogout'
 import { selectUser } from '@/features/auth/sessionSlice'
 import { selectCartCount } from '@/features/cart/cartSlice'
@@ -25,15 +26,16 @@ export function AppHeader({ liveStatus }: AppHeaderProps) {
   const cartCount = useAppSelector(selectCartCount)
   const user = useAppSelector(selectUser)
   const logout = useLogout()
+  const screens = Grid.useBreakpoint()
   const liveTag = liveStatus && liveStatus !== 'stopped' ? LIVE_TAG[liveStatus] : null
 
   return (
     <Flex align="center" justify="space-between" gap="middle" className="app-header">
       <Flex align="center" gap="middle">
-        <Link to="/" className="app-header__brand">
-          <BugOutlined aria-hidden /> The Bug Bazaar
+        <Link to="/" className="app-header__brand" aria-label="The Bug Bazaar, home">
+          <BrandLogo compact={!screens.sm} />
         </Link>
-        {liveTag && (
+        {liveTag && screens.sm && (
           <Tag
             color={liveTag.color}
             variant={liveTag.color === 'default' ? 'outlined' : 'solid'}

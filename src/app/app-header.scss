@@ -7,10 +7,14 @@
   margin: 0 auto;
 
   &__brand {
-    color: $color-text-base;
-    font-size: 20px;
-    font-weight: 700;
-    white-space: nowrap;
+    display: inline-flex;
+    padding: $space-xs;
+    border-radius: $border-radius;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+    }
   }
 
   &__live-tag {

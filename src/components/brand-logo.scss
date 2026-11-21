@@ -1,0 +1,48 @@
+@use '@/styles/variables' as *;
+
+.brand-logo {
+  line-height: 1;
+
+  &__mark {
+    flex: none;
+    width: 34px;
+    height: 34px;
+  }
+
+  &__tile {
+    fill: $color-primary;
+  }
+
+  &__bug {
+    fill: $color-bg-container;
+  }
+
+  &__lines {
+    fill: none;
+    stroke: $color-bg-container;
+    stroke-linecap: round;
+    stroke-width: 1.6;
+  }
+
+  &__seam {
+    stroke: $color-primary;
+    stroke-width: 1.3;
+  }
+
+  &__spot {
+    fill: $color-primary;
+  }
+
+  &__wordmark {
+    color: $color-text-base;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  &__accent {
+    color: $color-primary;
+    font-weight: inherit;
+  }
+}
