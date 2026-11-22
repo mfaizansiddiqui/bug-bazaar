@@ -4,39 +4,54 @@ A log of notable AI use (task D5-7). Tool used throughout: Claude Code in VS Cod
 
 ## AI uses
 
-### 2026-11-18: Planning: turn the brief into a week plan
+### 1. Turning the brief into a week plan
 
-- **Prompt:** "check this document and make a plan" (with the Bug Bazaar PDF attached)
-- **What I kept:** the day-by-day breakdown of every task ID, the order of work (Days 1–3 first because they produce the working store), and the habit of one commit per task.
-- **What I changed and why:** the AI suggested building on top of my Week 1 Bug Bounty repo. I wanted the store as a separate project and Week 1 left untouched, so it is built in `bug-bazaar` with a fresh history. I also picked Ant Design as the UI library instead of plain CSS, because it gives accessible form and grid components I can theme with tokens.
+- **Prompt:** I shared the Bug Bazaar PDF and asked for a plan for the week. Then I gave it my own guidelines plan and asked it to follow that plan and my folder layout instead of inventing its own.
+- **Kept:** the day-by-day task list mapped to the brief's task IDs, the stack (React 19, TypeScript strict, React Router, TanStack Query, Redux Toolkit, Zod, MSW, antd), and the rule of one commit per task.
+- **Changed, and why:**
+  - The first plan imported the Week 1 git history and worked inside the old folder. I asked for a separate project and a fresh history, because Week 1 had to stay untouched.
+  - It also planned files for Cursor. I only use VS Code with Claude Code, so I had those removed.
+  - It suggested RTK Query, but we kept TanStack Query for server data, so server and client state stay visibly separate (`docs/decisions.md`).
 
-### 2026-11-18: Setup: shared AI guidelines and secure baseline
+### 2. Cleaning up the shop page UI
 
-- **Prompt:** I gave the AI my own guidelines plan (CLAUDE.md, UI.md, a React review skill, a strict TypeScript and security baseline) and asked it to check the plan against my folders and follow it.
-- **What I kept:** one `CLAUDE.md` with the always-on rules, the feature guides in `docs/ai/`, the mandatory `UI.md` standard, the typed `fetch` client with Zod validation, and ESLint rules that enforce the guidelines (no `fetch` outside the client, no `any`, no inline styles).
-- **What I changed and why:** my plan assumed a `my-app` folder to rename and a repo that held Week 1 history. Neither matched my disk, so the setup was adapted to `bug-bazaar` as the repo root. The plan used symlinks for the review skill, which Git on Windows checks out as plain text files, so a pointer file was used instead. Later I removed the Cursor rule files completely, because I only use VS Code and Claude Code and they were dead weight.
+- **Prompt:** On Day 3 I asked for a simple, cleaner UI built with antd. After reviewing it in the browser, I sent a list of concrete fixes: a logo that fits the brand, Sign in switching to Sign out when signed in, aligned filters, an out-of-stock filter, a working Mock button, and a modern layout that works on desktop, tablet and phone.
+- **Kept:**
+  - the antd-only layout rules from `UI.md`;
+  - the new Availability select (All / In stock / Out of stock) mapped to the API's `inStock=true|false`;
+  - the hero banner, the wider cards, and the fix for the grid ending 16 px short of the page edge.
+- **Changed, and why:**
+  - The first version still had a checkbox with no label, which sat higher than the other filters. I asked for the filters to be aligned, and they became four labelled selects in one row.
+  - I asked for the shop to require login. The AI pointed out that the brief protects only account and checkout, and that a memory-only token signs you out on every reload. I decided to leave the shop public.
+  - I asked for a theme like a specific video game. It wouldn't copy the game's look and proposed an original "Ink & Crimson" palette instead, which I accepted.
+- **How I checked:** screenshots at desktop, tablet and phone widths, and a Lighthouse accessibility rerun (still 100 on home, cart and login).
 
-### 2026-11-19: D1-2: mock API with 5,000 products and error triggers
+### 3. Measuring and fixing list performance (D4-2, D4-3)
 
-- **Prompt:** "do it", continuing the agreed plan for D1-2 (document the contract, seed 5,000 products, make every error triggerable).
-- **What I kept:** the seeded random generator (same 5,000 products on every load), the in-memory mock database, idempotent orders keyed by `Idempotency-Key`, and the Mock controls panel that forces any documented error or slow and out-of-order responses.
-- **What I changed and why:** the shared contract has no in-stock filter, but D2-2 needs one. Filtering only the current page of 50 on the client would give wrong totals, so I accepted adding an optional `inStock=true` query param and recorded it as a contract extension in `docs/decisions.md` and `docs/api-contract.md`.
+- **Prompt:** I asked it to work through the Day 4 performance tasks: measure the product list first, fix the two biggest problems it found, and keep the full 5,000-item list fast while scrolling.
+- **Kept:**
+  - Measuring before changing anything.
+  - `React.memo` on `ProductCard`: a live stock update went from re-rendering 50 cards (100–139 ms) to 1 card (13–15 ms).
+  - Window virtualization: DOM nodes went from 95,190 to 729 with all 5,000 products loaded.
+- **Changed, and why:**
+  - One optimization was removed and two were skipped, because they made no measurable difference (`docs/performance.md`). I didn't want code I couldn't justify with a number.
 
-## AI mistakes caught
+## An AI mistake and how it was caught
 
-### 2026-11-19: AI used outdated library APIs
+The AI wrote the live stock feature so that every stock update dispatched `stockChanged`, and the cart reducer cleared the checkout `Idempotency-Key` whenever that action ran. As a result, a stock update arriving between a failed checkout and its retry gave the retry a new key, and the server could create a **second order**. That is exactly the double charge the key exists to prevent.
 
-- **What went wrong:** the AI wrote code for older major versions than the ones npm installed. It used msw 2's `onUnhandledRequest` option (msw 3 renamed it to `onUnhandledFrame`) and antd 5 props (`description` on `FloatButton`, `direction` on `Space`, `message` on `Alert`), which antd 6 deprecates.
-- **How I caught it:** `tsc` failed on the msw option, and the type-checked ESLint rule `@typescript-eslint/no-deprecated` flagged the antd props. Running `npm run check` before every commit caught both.
-- **Fix:** updated to `onUnhandledFrame`, `content`, `orientation` and `title`. Lesson: check the installed version (`package.json`) before trusting generated code, and keep strict lint rules on.
+It was caught while checking the live stock work against the checkout rules from D3-2 (the cart tests already required one key across retries). The fix: `stockChanged` now clears the key only when a cart quantity actually changes. A test now covers that exact case ("keeps the checkout key when a stock update leaves the quantities unchanged", in `cartSlice.test.ts`).
 
-### 2026-11-19: A shell command corrupted the docs
+Lesson: AI code can look right line by line and still break a rule that spans two features. Tests that state the rule ("one key per cart until the cart changes") catch what reading the diff doesn't.
 
-- **What went wrong:** the AI edited `docs/decisions.md` through a shell command, and the shell treated the backticks as commands. Code words like `inStock` vanished, leaving sentences such as "keeps correct".
-- **How I caught it:** reading the file after the change, plus the error lines in the command output.
-- **Fix:** rewrote the broken lines with a direct file edit.
+Smaller ones from the same project:
+
+- **A misleading measurement.** A first scroll measurement jumped straight through the list and made virtualization look worse. It was re-measured with a realistic scroll.
+- **A wrong reason in a document.** A doc draft gave a different reason for choosing TanStack Query than `decisions.md`. It was caught by checking the draft against the decisions log.
+- **A deleted folder.** A cleanup command followed a directory link and deleted part of `node_modules`. It was fixed with `npm install`.
 
 ## What I wouldn't hand to AI
 
-- **My self-assessment and reviews.** `reflection.md` ratings, the glossary in my own words, and my partner's architecture and code reviews must reflect my own understanding. If AI wrote them, they would say nothing about what I actually know.
-- **Final security trade-offs.** The AI can list options for where to store the auth token, but deciding the risk I accept (memory only, logged out on refresh) is my call, and I must be able to defend it.
+**Security trade-offs, and anything I'll have to defend.** Keeping the auth token in memory only means users are signed out on every reload. That is a product decision with a real cost. The AI can list the options (memory, `sessionStorage`, httpOnly cookie), but choosing which risk to accept is mine, and I have to explain it in the walkthrough.
+
+The same goes for my self-assessment and partner reviews: they are only useful if they are my own judgement.
