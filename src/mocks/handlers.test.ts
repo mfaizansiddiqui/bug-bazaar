@@ -33,6 +33,10 @@ describe('mock API: products', () => {
     const inStock = await getProducts({ inStock: true })
     expect(inStock.total).toBeLessThan(all.total)
     expect(inStock.items.every((product) => product.stock > 0)).toBe(true)
+
+    const soldOut = await getProducts({ inStock: false })
+    expect(soldOut.total).toBe(all.total - inStock.total)
+    expect(soldOut.items.every((product) => product.stock === 0)).toBe(true)
   })
 
   it('sorts by price, cheapest first', async () => {

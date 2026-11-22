@@ -23,6 +23,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Fails early with a clear message if Pages isn't enabled for this repo, instead of
+      # a confusing "no artifacts" error at the deploy step.
+      - uses: actions/configure-pages@v5
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -43,7 +47,8 @@ jobs:
         # Pages has no rewrites: serve the app for deep links like /products/p-0001 too.
         run: cp dist/index.html dist/404.html
 
-      - uses: actions/upload-pages-artifact@v3
+      # Uploads the "github-pages" artifact that deploy-pages looks for in the same run.
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 

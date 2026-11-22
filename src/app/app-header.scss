@@ -1,16 +1,23 @@
 @use '@/styles/variables' as *;
 
+// Sits on the ink header bar (Layout headerBg token), so text and focus rings are light.
 .app-header {
   width: 100%;
   max-width: $content-max-width;
   height: 100%;
   margin: 0 auto;
+  color: $color-header-text;
 
   &__brand {
-    color: $color-text-base;
-    font-size: 20px;
-    font-weight: 700;
-    white-space: nowrap;
+    display: inline-flex;
+    padding: $space-xs;
+    border-radius: $border-radius;
+    color: $color-header-text;
+
+    &:focus-visible {
+      outline: 2px solid $color-header-text;
+      outline-offset: 2px;
+    }
   }
 
   &__live-tag {
@@ -20,7 +27,46 @@
   &__link {
     padding: $space-xs $space-sm;
     border-radius: $border-radius;
-    color: $color-text-base;
+    color: $color-header-text;
+
+    &:hover,
+    &:focus-visible {
+      color: $color-primary-on-dark;
+    }
+  }
+
+  &__account {
+    display: inline-flex;
+    gap: $space-sm;
+    align-items: center;
+  }
+
+  // Paired with .ant-typography, which otherwise sets the dark body text color.
+  &__name.ant-typography {
+    color: inherit;
+  }
+
+  &__avatar {
+    background: $color-primary;
+  }
+
+  // A link (it navigates) that looks like antd's primary button.
+  &__sign-in {
+    display: inline-flex;
+    gap: $space-sm;
+    align-items: center;
+    height: 32px;
+    padding: 0 $space-md;
+    border-radius: $border-radius;
+    background: $color-primary;
+    color: $color-header-text;
+    font-weight: 500;
+
+    &:hover,
+    &:focus-visible {
+      background: $color-primary-hover;
+      color: $color-header-text;
+    }
   }
 
   &__cart {
@@ -28,7 +74,7 @@
   }
 
   &__cart-icon {
-    color: $color-text-base;
+    color: $color-header-text;
     font-size: 22px;
   }
 

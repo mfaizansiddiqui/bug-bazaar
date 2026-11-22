@@ -82,7 +82,10 @@ export const PRODUCTS_PAGE_SIZE = 50
 export interface ProductQuery {
   search?: string
   category?: Category
-  /** Extension to the shared contract, needed for the D2-2 in-stock filter. */
+  /**
+   * Extension to the shared contract, needed for the D2-2 availability filter.
+   * true: only products with stock. false: only sold-out products. Absent: all products.
+   */
   inStock?: boolean
   sort?: ProductSort
   page?: number

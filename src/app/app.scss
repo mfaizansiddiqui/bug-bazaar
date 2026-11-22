@@ -23,7 +23,8 @@
     position: sticky;
     z-index: 10;
     top: 0;
-    border-bottom: 1px solid $color-border;
+    // A thin crimson line under the ink bar.
+    border-bottom: 3px solid $color-primary;
   }
 
   &__content {
@@ -31,10 +32,15 @@
     width: 100%;
     max-width: $content-max-width;
     margin: 0 auto;
-    padding: $space-lg $space-md $space-xl;
+    padding: $space-md $space-md $space-xl;
+
+    @media (min-width: $screen-md) {
+      padding: $space-lg $space-lg $space-xl * 1.5;
+    }
   }
 
   &__footer {
+    border-top: 1px solid $color-border;
     text-align: center;
   }
 }

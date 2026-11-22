@@ -12,3 +12,11 @@ body {
   background: $color-bg-layout;
   color: $color-text-base;
 }
+
+// Headings use the serif display font; body text stays sans-serif for readability.
+// Paired with .ant-typography so it outranks antd's heading font.
+h1.ant-typography,
+h2.ant-typography,
+h3.ant-typography {
+  font-family: $font-heading;
+}

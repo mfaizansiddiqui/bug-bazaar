@@ -1,5 +1,6 @@
-import { Layout, Typography } from 'antd'
+import { Flex, Layout, Typography } from 'antd'
 import { Outlet, ScrollRestoration } from 'react-router'
+import { BrandLogo } from '@/components/BrandLogo'
 import { MockControls } from '@/dev/MockControls'
 import { useLiveStock } from '@/features/stock/useLiveStock'
 import { AppHeader } from './AppHeader'
@@ -38,9 +39,12 @@ export function App({ showMockControls = false, liveStock = false }: AppProps) {
         <Outlet />
       </Content>
       <Footer className="app__footer">
-        <Typography.Text type="secondary">
-          The Bug Bazaar · gear for people who ship bugs and fix them
-        </Typography.Text>
+        <Flex vertical align="center" gap="small">
+          <BrandLogo />
+          <Typography.Text type="secondary">
+            Gear for people who ship bugs and fix them.
+          </Typography.Text>
+        </Flex>
       </Footer>
       {showMockControls && <MockControls />}
       <ScrollRestoration />

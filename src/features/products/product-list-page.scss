@@ -3,11 +3,54 @@
 .product-list-page {
   width: 100%;
 
-  &__title {
+  // An ink-wash banner: a soft grey wash fading into paper, with a crimson edge.
+  &__hero {
+    padding: $space-lg;
+    border: 1px solid $color-border;
+    border-left: 4px solid $color-primary;
+    border-radius: $border-radius-lg;
+    background:
+      radial-gradient(ellipse at 85% 20%, rgba($color-text-base, 0.1) 0%, transparent 55%),
+      linear-gradient(120deg, $color-bg-container 0%, $color-bg-layout 100%);
+
+    @media (min-width: $screen-md) {
+      padding: $space-xl $space-xl * 1.25;
+    }
+  }
+
+  &__eyebrow {
+    color: $color-primary;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  // Paired with .ant-typography to outrank antd's heading and paragraph margins; the
+  // Flex gap does the spacing instead (same approach as the card title).
+  &__title.ant-typography {
     margin: 0;
   }
 
-  &__pagination {
-    align-self: center;
+  // A short crimson brush stroke under the title, drawn in CSS: thick in the middle,
+  // tapering at the ends.
+  &__title.ant-typography::after {
+    content: '';
+    display: block;
+    width: 72px;
+    height: 5px;
+    margin-top: $space-sm;
+    border-radius: 2px 60% 60% 2px / 2px 100% 100% 2px;
+    background: linear-gradient(90deg, $color-primary 0%, $color-primary 70%, transparent 100%);
+  }
+
+  &__lead.ant-typography {
+    max-width: 640px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  &__filters {
+    width: 100%;
   }
 }

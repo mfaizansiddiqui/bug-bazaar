@@ -1,22 +1,34 @@
 // SCSS mirror of src/theme/themeToken.ts. Keep the two aligned.
 // Component SCSS files use these variables. No hardcoded colors in component files.
 
-// Colors
-$color-primary: #5b3df5;
-$color-success: #1d6b30;
-$color-warning: #a24f00;
-$color-error: #c92a2a;
-$color-info: #1c7ed6;
-$color-bg-layout: #f7f7fb;
-$color-bg-container: #ffffff;
-$color-text-base: #1f1d2b;
-$color-text-secondary: #5f5c6e;
-$color-text-placeholder: #6b6880;
-$color-border: #ebe9f3;
+// Colors ("Ink & Crimson")
+$color-primary: #9e1b1b;
+$color-primary-hover: #7f1414;
+$color-primary-bg: #f6e6df;
+$color-success: #2f5d2a;
+$color-warning: #8a5a00;
+$color-error: #b42318;
+$color-info: #2f4b7c;
+$color-bg-layout: #f6f1e7;
+$color-bg-container: #fffcf6;
+$color-text-base: #1c1a17;
+$color-text-secondary: #5a5247;
+$color-text-placeholder: #6b6357;
+$color-border: #e4dccb;
+
+// SCSS-only colors (no antd token): the ink header and the gold accent.
+$color-header-bg: #1c1a17;
+$color-header-text: #f6f1e7;
+// Crimson lightened for text on the ink header (5:1); plain crimson is too dark there.
+$color-primary-on-dark: #e8685a;
+$color-gold: #8a6a1f;
+
+// Typography
+$font-heading: 'Shippori Mincho', 'Noto Serif JP', Georgia, 'Times New Roman', serif;
 
 // Shape and spacing
-$border-radius: 8px;
-$border-radius-lg: 12px;
+$border-radius: 4px;
+$border-radius-lg: 6px;
 $space-xs: 4px;
 $space-sm: 8px;
 $space-md: 16px;

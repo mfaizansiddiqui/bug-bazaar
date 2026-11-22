@@ -54,9 +54,9 @@ type ApiError = {
 | `category` | `keyboards`, `ducks`, `coffee`, `stickers`                                     | all         |
 | `sort`     | `relevance`, `price-asc`, `price-desc`, `rating` (highest first), `name` (A–Z) | `relevance` |
 | `page`     | 1-based page number. The page size is fixed at **50**.                         | `1`         |
-| `inStock`  | `true` hides products with `stock: 0`                                          | off         |
+| `inStock`  | `true`: only products with stock. `false`: only products with `stock: 0`       | off (all)   |
 
-`total` is the number of matching products across all pages. `inStock` **is an addition to the shared contract**, needed for the D2-2 "only in-stock" filter so the server can filter before paging (see `docs/decisions.md`).
+`total` is the number of matching products across all pages. `inStock` **is an addition to the shared contract**, needed for the D2-2 availability filter (in stock / out of stock) so the server can filter before paging (see `docs/decisions.md`).
 
 ```json
 // GET /api/products?category=ducks&sort=price-asc&page=1

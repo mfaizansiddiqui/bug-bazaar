@@ -3,22 +3,32 @@ import { useSearchParams } from 'react-router'
 import { CATEGORIES, PRODUCT_SORTS, type Category, type ProductSort } from '@/api/contract'
 import type { ProductListQuery } from './productQueries'
 
+/** Stock filter. `all` shows everything; the others map to the API's `inStock=true|false`. */
+export type Availability = 'all' | 'inStock' | 'outOfStock'
+
 export interface ProductFilters {
   search: string
   category: Category | null
-  inStock: boolean
+  availability: Availability
   sort: ProductSort
 }
 
 const DEFAULTS: ProductFilters = {
   search: '',
   category: null,
-  inStock: false,
+  availability: 'all',
   sort: 'relevance',
 }
 
 function isCategory(value: string | null): value is Category {
   return CATEGORIES.some((category) => category === value)
+}
+
+/** `?inStock=true` and `?inStock=false` in the URL, the same values the API takes. */
+function parseAvailability(value: string | null): Availability {
+  if (value === 'true') return 'inStock'
+  if (value === 'false') return 'outOfStock'
+  return 'all'
 }
 
 function isSort(value: string | null): value is ProductSort {
@@ -32,7 +42,7 @@ export function parseFilters(params: URLSearchParams): ProductFilters {
   return {
     search: params.get('search') ?? DEFAULTS.search,
     category: isCategory(category) ? category : DEFAULTS.category,
-    inStock: params.get('inStock') === 'true',
+    availability: parseAvailability(params.get('inStock')),
     sort: isSort(sort) ? sort : DEFAULTS.sort,
   }
 }
@@ -42,7 +52,9 @@ function toParams(filters: ProductFilters): URLSearchParams {
   const params = new URLSearchParams()
   if (filters.search) params.set('search', filters.search)
   if (filters.category) params.set('category', filters.category)
-  if (filters.inStock) params.set('inStock', 'true')
+  if (filters.availability !== 'all') {
+    params.set('inStock', String(filters.availability === 'inStock'))
+  }
   if (filters.sort !== DEFAULTS.sort) params.set('sort', filters.sort)
   return params
 }
@@ -52,7 +64,7 @@ export function toProductQuery(filters: ProductFilters): ProductListQuery {
   return {
     ...(filters.search ? { search: filters.search } : {}),
     ...(filters.category ? { category: filters.category } : {}),
-    ...(filters.inStock ? { inStock: true } : {}),
+    ...(filters.availability === 'all' ? {} : { inStock: filters.availability === 'inStock' }),
     sort: filters.sort,
   }
 }
@@ -80,7 +92,7 @@ export function useProductFilters() {
   const hasActiveFilters =
     filters.search !== DEFAULTS.search ||
     filters.category !== DEFAULTS.category ||
-    filters.inStock !== DEFAULTS.inStock ||
+    filters.availability !== DEFAULTS.availability ||
     filters.sort !== DEFAULTS.sort
 
   return { filters, setFilters, clearFilters, hasActiveFilters }

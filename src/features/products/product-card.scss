@@ -12,6 +12,17 @@
 
   &__card {
     height: 100%;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+
+  // A small lift on hover. Respect users who ask for less motion.
+  &__card:hover {
+    transform: translateY(-2px);
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: none;
+    }
   }
 
   // width/height attributes reserve space (no layout shift); CSS then sizes it to 4:3.
@@ -32,7 +43,7 @@
   }
 
   &__star {
-    color: $color-warning;
+    color: $color-gold;
   }
 
   // Two-line clamp in CSS. antd's JS ellipsis measures every card after render, which is
@@ -50,7 +61,8 @@
   }
 
   &__price {
-    font-size: 18px;
+    font-size: 20px;
+    letter-spacing: -0.01em;
   }
 
   // Read by screen readers only.
