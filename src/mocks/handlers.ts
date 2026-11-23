@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from 'msw'
 import {
   CategorySchema,
+  isProductPageSize,
   PRODUCTS_PAGE_SIZE,
   type ApiError,
   type CreateOrderRequest,
@@ -76,6 +77,9 @@ export const handlers = [
     const inStock = params.get('inStock')
     const sort = params.get('sort') ?? 'relevance'
     const page = Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1)
+    // Only the documented sizes; anything else (missing, 7, 5000) gets the default.
+    const requestedSize = Number(params.get('pageSize'))
+    const pageSize = isProductPageSize(requestedSize) ? requestedSize : PRODUCTS_PAGE_SIZE
 
     let items = db.products.filter(
       (product) =>
@@ -87,9 +91,9 @@ export const handlers = [
     const sorter = isSort(sort) ? SORTERS[sort] : null
     if (sorter) items = [...items].sort(sorter)
 
-    const start = (page - 1) * PRODUCTS_PAGE_SIZE
+    const start = (page - 1) * pageSize
     return HttpResponse.json({
-      items: items.slice(start, start + PRODUCTS_PAGE_SIZE),
+      items: items.slice(start, start + pageSize),
       total: items.length,
     })
   }),

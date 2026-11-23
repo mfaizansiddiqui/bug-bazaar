@@ -22,7 +22,8 @@ export type ProductPages = InfiniteData<ProductList, number>
 export const productKeys = {
   all: ['products'] as const,
   lists: () => [...productKeys.all, 'list'] as const,
-  list: (query: ProductListQuery) => [...productKeys.lists(), query] as const,
+  /** An infinite list has no `page` in its key; one numbered page does. */
+  list: (query: ProductQuery) => [...productKeys.lists(), query] as const,
   detail: (id: string) => [...productKeys.all, 'detail', id] as const,
 }
 
@@ -30,7 +31,7 @@ export const productKeys = {
  * The product list as one growing list (D4-3): page 1 first, then the next 50 each time
  * fetchNextPage is called, until all `total` products are loaded.
  */
-export function useInfiniteProducts(query: ProductListQuery) {
+export function useInfiniteProducts(query: ProductListQuery, { enabled = true } = {}) {
   return useInfiniteQuery({
     queryKey: productKeys.list(query),
     queryFn: ({ signal, pageParam }) => getProducts({ ...query, page: pageParam }, signal),
@@ -39,6 +40,25 @@ export function useInfiniteProducts(query: ProductListQuery) {
       const loaded = allPages.reduce((count, page) => count + page.items.length, 0)
       return loaded < lastPage.total ? allPages.length + 1 : undefined
     },
+    enabled,
+  })
+}
+
+/**
+ * One numbered page of products (classic pagination).
+ *
+ * The page is cached in the same shape as the infinite list (`{ pages, pageParams }`) on
+ * purpose: live stock updates, the details-page shortcut and the refresh after an order
+ * all read product lists in that one shape, so they work for both views unchanged.
+ */
+export function usePagedProducts(query: ProductListQuery, page: number, { enabled = true } = {}) {
+  return useQuery({
+    queryKey: productKeys.list({ ...query, page }),
+    queryFn: async ({ signal }): Promise<ProductPages> => {
+      const list = await getProducts({ ...query, page }, signal)
+      return { pages: [list], pageParams: [page] }
+    },
+    enabled,
   })
 }
 

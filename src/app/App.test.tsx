@@ -5,7 +5,8 @@ import { renderApp } from '@/test/renderApp'
 
 describe('browsing products', () => {
   it('shows products with prices formatted from cents, rendering only what is on screen', async () => {
-    renderApp('/')
+    // "All (scroll)": the infinite, virtualized list from D4-3.
+    renderApp('/?pageSize=all')
     const firstCard = await screen.findByRole('link', { name: /Last-One Debugging Duck/ })
     expect(firstCard).toHaveTextContent('$12.99')
     expect(firstCard).toHaveTextContent('Only 1 left')
