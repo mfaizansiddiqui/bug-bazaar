@@ -76,8 +76,16 @@ export type StockUpdate = z.infer<typeof StockUpdateSchema>
 export const PRODUCT_SORTS = ['relevance', 'price-asc', 'price-desc', 'rating', 'name'] as const
 export type ProductSort = (typeof PRODUCT_SORTS)[number]
 
-/** Fixed page size for GET /api/products (see docs/api-contract.md). */
+/** Default page size for GET /api/products (see docs/api-contract.md). */
 export const PRODUCTS_PAGE_SIZE = 50
+
+/** Page sizes the API accepts. Anything else falls back to PRODUCTS_PAGE_SIZE. */
+export const PRODUCT_PAGE_SIZES = [25, 50, 100] as const
+export type ProductPageSize = (typeof PRODUCT_PAGE_SIZES)[number]
+
+export function isProductPageSize(value: number): value is ProductPageSize {
+  return PRODUCT_PAGE_SIZES.some((size) => size === value)
+}
 
 export interface ProductQuery {
   search?: string
@@ -89,6 +97,8 @@ export interface ProductQuery {
   inStock?: boolean
   sort?: ProductSort
   page?: number
+  /** Extension to the shared contract: products per page, one of PRODUCT_PAGE_SIZES. */
+  pageSize?: ProductPageSize
 }
 
 export interface LoginRequest {

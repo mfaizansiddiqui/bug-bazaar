@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react'
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, ConfigProvider, Flex, Form, Input, Row, Select, Typography } from 'antd'
-import { CATEGORIES, type Category, type ProductSort } from '@/api/contract'
+import {
+  CATEGORIES,
+  PRODUCT_PAGE_SIZES,
+  type Category,
+  type ProductPageSize,
+  type ProductSort,
+} from '@/api/contract'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import type { Availability, ProductFilters as Filters } from './useProductFilters'
 import './product-filters.scss'
@@ -21,6 +27,11 @@ const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
   { value: 'inStock', label: 'In stock' },
   { value: 'outOfStock', label: 'Out of stock' },
 ]
+
+const PAGE_SIZE_OPTIONS = PRODUCT_PAGE_SIZES.map((size) => ({
+  value: size,
+  label: `${String(size)} per page`,
+}))
 
 const CATEGORY_OPTIONS = CATEGORIES.map((category) => ({
   value: category,
@@ -72,7 +83,7 @@ export function ProductFilters({
     <ConfigProvider theme={{ components: { Form: { itemMarginBottom: 0 } } }}>
       <Form layout="vertical" className="product-filters" role="search">
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={24} md={24} lg={9} xl={9} xxl={9}>
+          <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <Form.Item label="Search" htmlFor="product-search">
               <Input
                 id="product-search"
@@ -87,7 +98,7 @@ export function ProductFilters({
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
+          <Col xs={24} sm={12} md={6} lg={4} xl={4} xxl={4}>
             <Form.Item label="Category" htmlFor="product-category">
               <Select<Category>
                 id="product-category"
@@ -101,7 +112,7 @@ export function ProductFilters({
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12} md={8} lg={5} xl={5} xxl={5}>
+          <Col xs={24} sm={12} md={6} lg={4} xl={4} xxl={4}>
             <Form.Item label="Availability" htmlFor="product-availability">
               <Select<Availability>
                 id="product-availability"
@@ -113,7 +124,7 @@ export function ProductFilters({
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={8} lg={5} xl={5} xxl={5}>
+          <Col xs={24} sm={12} md={6} lg={4} xl={4} xxl={4}>
             <Form.Item label="Sort by" htmlFor="product-sort">
               <Select<ProductSort>
                 id="product-sort"
@@ -121,6 +132,18 @@ export function ProductFilters({
                 value={filters.sort}
                 onChange={(sort) => {
                   onChange({ sort })
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={4} xl={4} xxl={4}>
+            <Form.Item label="Per page" htmlFor="product-page-size">
+              <Select<ProductPageSize>
+                id="product-page-size"
+                options={PAGE_SIZE_OPTIONS}
+                value={filters.pageSize}
+                onChange={(pageSize) => {
+                  onChange({ pageSize })
                 }}
               />
             </Form.Item>

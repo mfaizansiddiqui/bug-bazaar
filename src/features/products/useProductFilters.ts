@@ -1,6 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router'
-import { CATEGORIES, PRODUCT_SORTS, type Category, type ProductSort } from '@/api/contract'
+import {
+  CATEGORIES,
+  isProductPageSize,
+  PRODUCT_SORTS,
+  PRODUCTS_PAGE_SIZE,
+  type Category,
+  type ProductPageSize,
+  type ProductSort,
+} from '@/api/contract'
 import type { ProductListQuery } from './productQueries'
 
 /** Stock filter. `all` shows everything; the others map to the API's `inStock=true|false`. */
@@ -11,6 +19,8 @@ export interface ProductFilters {
   category: Category | null
   availability: Availability
   sort: ProductSort
+  /** Products loaded per batch. In the URL so a shared link loads the same way. */
+  pageSize: ProductPageSize
 }
 
 const DEFAULTS: ProductFilters = {
@@ -18,6 +28,7 @@ const DEFAULTS: ProductFilters = {
   category: null,
   availability: 'all',
   sort: 'relevance',
+  pageSize: PRODUCTS_PAGE_SIZE,
 }
 
 function isCategory(value: string | null): value is Category {
@@ -35,6 +46,12 @@ function isSort(value: string | null): value is ProductSort {
   return PRODUCT_SORTS.some((sort) => sort === value)
 }
 
+/** `?pageSize=25|50|100`. Missing or anything else (`abc`, `7`, `5000`) means the default. */
+function parsePageSize(value: string | null): ProductPageSize {
+  const size = Number(value)
+  return value !== null && isProductPageSize(size) ? size : DEFAULTS.pageSize
+}
+
 /** Reads filters from the URL. Anything invalid (a hand-edited link) falls back to the default. */
 export function parseFilters(params: URLSearchParams): ProductFilters {
   const category = params.get('category')
@@ -44,6 +61,7 @@ export function parseFilters(params: URLSearchParams): ProductFilters {
     category: isCategory(category) ? category : DEFAULTS.category,
     availability: parseAvailability(params.get('inStock')),
     sort: isSort(sort) ? sort : DEFAULTS.sort,
+    pageSize: parsePageSize(params.get('pageSize')),
   }
 }
 
@@ -56,6 +74,7 @@ function toParams(filters: ProductFilters): URLSearchParams {
     params.set('inStock', String(filters.availability === 'inStock'))
   }
   if (filters.sort !== DEFAULTS.sort) params.set('sort', filters.sort)
+  if (filters.pageSize !== DEFAULTS.pageSize) params.set('pageSize', String(filters.pageSize))
   return params
 }
 
@@ -66,13 +85,15 @@ export function toProductQuery(filters: ProductFilters): ProductListQuery {
     ...(filters.category ? { category: filters.category } : {}),
     ...(filters.availability === 'all' ? {} : { inStock: filters.availability === 'inStock' }),
     sort: filters.sort,
+    ...(filters.pageSize === DEFAULTS.pageSize ? {} : { pageSize: filters.pageSize }),
   }
 }
 
 /**
  * Filters live in the URL, not in component state (D2-2). That is why a refresh keeps them,
  * a copied link reproduces the same view, and Back steps through earlier filter changes.
- * The page isn't in the URL: the list loads more as you scroll (D4-3).
+ * The page number isn't in the URL: the list loads more as you scroll (D4-3). The page
+ * size is, because it changes how the list loads.
  */
 export function useProductFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -93,7 +114,8 @@ export function useProductFilters() {
     filters.search !== DEFAULTS.search ||
     filters.category !== DEFAULTS.category ||
     filters.availability !== DEFAULTS.availability ||
-    filters.sort !== DEFAULTS.sort
+    filters.sort !== DEFAULTS.sort ||
+    filters.pageSize !== DEFAULTS.pageSize
 
   return { filters, setFilters, clearFilters, hasActiveFilters }
 }

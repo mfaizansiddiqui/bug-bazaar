@@ -37,14 +37,14 @@ type ApiError = {
 
 ## Endpoints
 
-| Method | Endpoint                                      | Success                                   | Errors                          |
-| ------ | --------------------------------------------- | ----------------------------------------- | ------------------------------- |
-| GET    | `/api/products?search=&category=&sort=&page=` | 200 `{ items: Product[], total: number }` | 500                             |
-| GET    | `/api/products/:id`                           | 200 `Product`                             | 404                             |
-| POST   | `/api/login`                                  | 200 `{ token, user }`                     | 400, 401                        |
-| GET    | `/api/me`                                     | 200 `User`                                | 401                             |
-| POST   | `/api/orders`                                 | 201 `{ id, status: "queued" }`            | 400, 401, 409 when out of stock |
-| GET    | `/api/orders/:id`                             | 200 `{ id, status }`                      | 401, 404                        |
+| Method | Endpoint                                                         | Success                                   | Errors                          |
+| ------ | ---------------------------------------------------------------- | ----------------------------------------- | ------------------------------- |
+| GET    | `/api/products?search=&category=&sort=&page=&pageSize=&inStock=` | 200 `{ items: Product[], total: number }` | 500                             |
+| GET    | `/api/products/:id`                                              | 200 `Product`                             | 404                             |
+| POST   | `/api/login`                                                     | 200 `{ token, user }`                     | 400, 401                        |
+| GET    | `/api/me`                                                        | 200 `User`                                | 401                             |
+| POST   | `/api/orders`                                                    | 201 `{ id, status: "queued" }`            | 400, 401, 409 when out of stock |
+| GET    | `/api/orders/:id`                                                | 200 `{ id, status }`                      | 401, 404                        |
 
 ### GET /api/products
 
@@ -53,10 +53,11 @@ type ApiError = {
 | `search`   | Text matched against the name, case-insensitive                                | none        |
 | `category` | `keyboards`, `ducks`, `coffee`, `stickers`                                     | all         |
 | `sort`     | `relevance`, `price-asc`, `price-desc`, `rating` (highest first), `name` (A–Z) | `relevance` |
-| `page`     | 1-based page number. The page size is fixed at **50**.                         | `1`         |
+| `page`     | 1-based page number                                                            | `1`         |
+| `pageSize` | `25`, `50` or `100` products per page. Any other value is ignored.             | `50`        |
 | `inStock`  | `true`: only products with stock. `false`: only products with `stock: 0`       | off (all)   |
 
-`total` is the number of matching products across all pages. `inStock` **is an addition to the shared contract**, needed for the D2-2 availability filter (in stock / out of stock) so the server can filter before paging (see `docs/decisions.md`).
+`total` is the number of matching products across all pages. `inStock` and `pageSize` **are additions to the shared contract**. `inStock` is needed for the D2-2 availability filter, so the server can filter before paging. `pageSize` lets a shared link load the list in the same batch size. It only accepts the three listed sizes, so a client can't ask for all 5,000 products in one response (see `docs/decisions.md`).
 
 ```json
 // GET /api/products?category=ducks&sort=price-asc&page=1

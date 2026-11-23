@@ -149,6 +149,7 @@ function toSearchParams(query: ProductQuery): string {
   if (query.inStock !== undefined) params.set('inStock', String(query.inStock))
   if (query.sort) params.set('sort', query.sort)
   if (query.page !== undefined) params.set('page', String(query.page))
+  if (query.pageSize !== undefined) params.set('pageSize', String(query.pageSize))
   const text = params.toString()
   return text ? `?${text}` : ''
 }

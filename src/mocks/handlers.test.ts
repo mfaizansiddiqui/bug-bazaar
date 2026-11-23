@@ -39,6 +39,16 @@ describe('mock API: products', () => {
     expect(soldOut.items.every((product) => product.stock === 0)).toBe(true)
   })
 
+  it('returns the requested page size, and the default for any other value', async () => {
+    expect((await getProducts({ pageSize: 25 })).items).toHaveLength(25)
+    expect((await getProducts({ pageSize: 100, page: 2 })).items).toHaveLength(100)
+    expect((await getProducts()).items).toHaveLength(50)
+
+    // @ts-expect-error -- 5000 isn't an allowed size; this checks the server falls back to 50.
+    const tooBig = await getProducts({ pageSize: 5000 })
+    expect(tooBig.items).toHaveLength(PRODUCTS_PAGE_SIZE)
+  })
+
   it('sorts by price, cheapest first', async () => {
     const { items } = await getProducts({ sort: 'price-asc' })
     const prices = items.map((product) => product.price)

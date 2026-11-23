@@ -93,9 +93,26 @@ describe('product filters', () => {
     )
   })
 
+  it('loads the page size from a shared link, and writes a new one to the URL', async () => {
+    const user = userEvent.setup()
+    const { router } = renderApp('/?pageSize=25')
+    expect(await screen.findByText('Showing 25 of 5,000 products')).toBeVisible()
+
+    await user.click(screen.getByRole('combobox', { name: 'Per page' }))
+    const matches = await screen.findAllByTitle('100 per page')
+    const option = matches.at(-1)
+    if (!option) throw new Error('No "100 per page" option')
+    await user.click(option)
+
+    expect(router.state.location.search).toBe('?pageSize=100')
+    expect(await screen.findByText('Showing 100 of 5,000 products')).toBeVisible()
+  })
+
   it('ignores invalid values in a hand-edited link', () => {
     const filters = parseFilters(new URLSearchParams('category=hats&sort=cheapest'))
     expect(filters).toMatchObject({ category: null, sort: 'relevance' })
     expect(parseFilters(new URLSearchParams('inStock=maybe')).availability).toBe('all')
+    expect(parseFilters(new URLSearchParams('pageSize=7')).pageSize).toBe(50)
+    expect(parseFilters(new URLSearchParams('pageSize=abc')).pageSize).toBe(50)
   })
 })
