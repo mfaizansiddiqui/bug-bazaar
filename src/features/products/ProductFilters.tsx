@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Col, ConfigProvider, Flex, Form, Input, Row, Select, Typography } from 'antd'
-import {
-  CATEGORIES,
-  PRODUCT_PAGE_SIZES,
-  type Category,
-  type ProductPageSize,
-  type ProductSort,
-} from '@/api/contract'
+import { CATEGORIES, PRODUCT_PAGE_SIZES, type Category, type ProductSort } from '@/api/contract'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import type { Availability, ProductFilters as Filters } from './useProductFilters'
+import type { Availability, PageSizeOption, ProductFilters as Filters } from './useProductFilters'
 import './product-filters.scss'
 
 const SEARCH_DEBOUNCE_MS = 300
@@ -28,10 +22,11 @@ const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
   { value: 'outOfStock', label: 'Out of stock' },
 ]
 
-const PAGE_SIZE_OPTIONS = PRODUCT_PAGE_SIZES.map((size) => ({
-  value: size,
-  label: `${String(size)} per page`,
-}))
+const PAGE_SIZE_OPTIONS: { value: PageSizeOption; label: string }[] = [
+  ...PRODUCT_PAGE_SIZES.map((size) => ({ value: size, label: `${String(size)} per page` })),
+  // The infinite, virtualized list (D4-3): keeps loading as you scroll.
+  { value: 'all', label: 'All (scroll)' },
+]
 
 const CATEGORY_OPTIONS = CATEGORIES.map((category) => ({
   value: category,
@@ -138,7 +133,7 @@ export function ProductFilters({
           </Col>
           <Col xs={24} sm={12} md={6} lg={4} xl={4} xxl={4}>
             <Form.Item label="Per page" htmlFor="product-page-size">
-              <Select<ProductPageSize>
+              <Select<PageSizeOption>
                 id="product-page-size"
                 options={PAGE_SIZE_OPTIONS}
                 value={filters.pageSize}

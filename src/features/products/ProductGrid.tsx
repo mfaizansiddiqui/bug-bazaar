@@ -25,6 +25,8 @@ interface ProductGridProps {
   products: Product[]
   /** All matching products, loaded or not. Lets screen readers announce "item 3 of 5,000". */
   total?: number
+  /** Products before the first one shown, e.g. 50 on page 2 of 50 per page. */
+  offset?: number
 }
 
 /**
@@ -35,7 +37,7 @@ interface ProductGridProps {
  * Inline `style` is used here on purpose: row positions are computed while scrolling, so
  * they can't live in SCSS. This file is the documented exception in UI.md.
  */
-export function ProductGrid({ products, total = products.length }: ProductGridProps) {
+export function ProductGrid({ products, total = products.length, offset = 0 }: ProductGridProps) {
   const columns = useColumns()
   const listRef = useRef<HTMLDivElement>(null)
   const [listTop, setListTop] = useState(0)
@@ -88,7 +90,7 @@ export function ProductGrid({ products, total = products.length }: ProductGridPr
                 key={product.id}
                 role="listitem"
                 aria-setsize={total}
-                aria-posinset={virtualRow.index * columns + column + 1}
+                aria-posinset={offset + virtualRow.index * columns + column + 1}
                 xs={24}
                 sm={12}
                 md={8}

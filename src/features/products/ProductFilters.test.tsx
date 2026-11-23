@@ -11,15 +11,21 @@ async function productNames(): Promise<string[]> {
     .map((heading) => heading.textContent)
 }
 
-/** Opens the Availability select and picks an option, as a user would. */
-async function chooseAvailability(user: ReturnType<typeof userEvent.setup>, label: string) {
-  await user.click(screen.getByRole('combobox', { name: 'Availability' }))
+type User = ReturnType<typeof userEvent.setup>
+
+/** Opens a labelled select and picks an option, as a user would. */
+async function chooseOption(user: User, select: string, label: string) {
+  await user.click(screen.getByRole('combobox', { name: select }))
   // antd renders each visible option with its label as the title. The last match is the
   // option in the open dropdown (the select's own value can carry the same title).
   const matches = await screen.findAllByTitle(label)
   const option = matches.at(-1)
   if (!option) throw new Error(`No "${label}" option`)
   await user.click(option)
+}
+
+async function chooseAvailability(user: User, label: string) {
+  await chooseOption(user, 'Availability', label)
 }
 
 describe('product filters', () => {
@@ -96,16 +102,37 @@ describe('product filters', () => {
   it('loads the page size from a shared link, and writes a new one to the URL', async () => {
     const user = userEvent.setup()
     const { router } = renderApp('/?pageSize=25')
-    expect(await screen.findByText('Showing 25 of 5,000 products')).toBeVisible()
+    expect(await screen.findByText('Showing 1–25 of 5,000 products')).toBeVisible()
 
-    await user.click(screen.getByRole('combobox', { name: 'Per page' }))
-    const matches = await screen.findAllByTitle('100 per page')
-    const option = matches.at(-1)
-    if (!option) throw new Error('No "100 per page" option')
-    await user.click(option)
+    await chooseOption(user, 'Per page', '100 per page')
 
     expect(router.state.location.search).toBe('?pageSize=100')
-    expect(await screen.findByText('Showing 100 of 5,000 products')).toBeVisible()
+    expect(await screen.findByText('Showing 1–100 of 5,000 products')).toBeVisible()
+  })
+
+  it('pages through numbered pages, and a filter change goes back to page 1', async () => {
+    const user = userEvent.setup()
+    const { router } = renderApp('/')
+    expect(await screen.findByText('Showing 1–50 of 5,000 products')).toBeVisible()
+
+    await user.click(screen.getByRole('button', { name: 'Page 2' }))
+    await waitFor(() => {
+      expect(router.state.location.search).toBe('?page=2')
+    })
+    expect(await screen.findByText('Showing 51–100 of 5,000 products')).toBeVisible()
+
+    await chooseOption(user, 'Availability', 'In stock')
+    expect(router.state.location.search).toBe('?inStock=true')
+  })
+
+  it('opens a shared link on the same page, and a page past the end on the last page', async () => {
+    const first = renderApp('/?page=3&pageSize=25')
+    expect(await screen.findByText('Showing 51–75 of 5,000 products')).toBeVisible()
+    first.unmount()
+
+    const { router } = renderApp('/?page=999')
+    expect(await screen.findByText('Showing 4,951–5,000 of 5,000 products')).toBeVisible()
+    expect(router.state.location.search).toBe('?page=100')
   })
 
   it('ignores invalid values in a hand-edited link', () => {
@@ -114,5 +141,9 @@ describe('product filters', () => {
     expect(parseFilters(new URLSearchParams('inStock=maybe')).availability).toBe('all')
     expect(parseFilters(new URLSearchParams('pageSize=7')).pageSize).toBe(50)
     expect(parseFilters(new URLSearchParams('pageSize=abc')).pageSize).toBe(50)
+    expect(parseFilters(new URLSearchParams('page=0')).page).toBe(1)
+    expect(parseFilters(new URLSearchParams('page=2.5')).page).toBe(1)
+    // The infinite list has no pages.
+    expect(parseFilters(new URLSearchParams('pageSize=all&page=3')).page).toBe(1)
   })
 })
