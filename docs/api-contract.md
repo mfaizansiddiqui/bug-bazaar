@@ -2,7 +2,7 @@
 
 The shared contract every task builds against. The mock in `src/mocks/` implements it, and the Zod schemas in `src/api/contract.ts` check every response at runtime.
 
-- Base URL: `/api` (`VITE_API_BASE_URL`)
+- Base URL: `api/` inside the app's folder (`/api` locally, `/bug-bazaar/api` on GitHub Pages). `VITE_API_BASE_URL` overrides it for a real backend. In the browser these requests are answered by the mock (an MSW service worker), so opening an `/api/...` URL directly in the address bar returns the host's 404: there's no server behind it.
 - Bodies are JSON. Requests with a body send `Content-Type: application/json`.
 - **Prices are integer cents.** `1299` means $12.99. Convert only for display.
 - Authenticated endpoints need `Authorization: Bearer <token>`.

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './client'
 import { StockUpdateSchema, type StockUpdate } from './contract'
 
 /**
@@ -40,7 +41,7 @@ export function reconnectDelay(attempt: number, random: () => number = Math.rand
 }
 
 /** ws:// or wss:// URL for the stock feed, next to the REST API. */
-export function liveStockUrl(apiBase = import.meta.env.VITE_API_BASE_URL ?? '/api'): string {
+export function liveStockUrl(apiBase = API_BASE_URL): string {
   const url = new URL(`${apiBase.replace(/\/$/, '')}/stock`, window.location.href)
   url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
   return url.toString()
