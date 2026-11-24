@@ -39,9 +39,9 @@ No real backend is needed. The API is mocked with [MSW](https://mswjs.io).
 
 Copy `.env.example` to `.env`. Every variable starting with `VITE_` is bundled into the browser, so **never put secrets in them**.
 
-| Variable            | Default | Purpose                                              |
-| ------------------- | ------- | ---------------------------------------------------- |
-| `VITE_API_BASE_URL` | `/api`  | Base URL for API requests. `/api` uses the mock API. |
+| Variable            | Default                    | Purpose                                                                                                                                                                                           |
+| ------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL` | unset (`<app folder>/api`) | Base URL for API requests. Unset, requests go to `api/` inside the app's folder (`/api` locally, `/bug-bazaar/api` on GitHub Pages), where the mock answers them. Set it only for a real backend. |
 
 ## Folder structure
 

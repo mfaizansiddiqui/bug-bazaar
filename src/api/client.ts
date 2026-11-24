@@ -21,7 +21,12 @@ import {
  * Components and hooks call the typed functions at the bottom of this file.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+/**
+ * Where the API lives. By default it sits inside the app's own folder: `/api` locally,
+ * `/bug-bazaar/api` on GitHub Pages. VITE_API_BASE_URL overrides it for a real backend.
+ */
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? `${import.meta.env.BASE_URL}api`
+const BASE_URL = API_BASE_URL
 
 export type ApiErrorKind =
   | 'validation' // 400
